@@ -33,8 +33,8 @@ async function sendMail({
 
     // let user = process.env.SUPPORT_EMAIL,
     //   pass = process.env.SUPPORT_PASS;
-    let user = "ramkrishnaindalkar@gmail.com",
-      pass = "Csdem1000!SaiRam2021";
+    let user = process.env.FROM_EMAIL,
+      pass = process.env.FROM_PASSWORD;
     if (!user || !pass) {
       throw {
         error: true,

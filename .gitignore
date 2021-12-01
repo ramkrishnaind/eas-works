@@ -14,7 +14,7 @@ admin/package-lock.json
 /coverage
 #/uploads
 #uploads
-
+.env
 # production
 /build
 /admin/build
