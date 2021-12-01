@@ -1,9 +1,9 @@
 const mongoose = require("mongoose"),
   dbconf = require("../Database/db.json");
 
-let dbString = "mongodb+srv://" + dbconf.dbcredentials.user;
-dbString = dbString + ":" + dbconf.dbcredentials.password;
-dbString = dbString + "@" + dbconf.dbcredentials.address;
+let dbString = "mongodb+srv://" + process.env.DB_USER;
+dbString = dbString + ":" + process.env.DB_PASSWORD;
+dbString = dbString + "@" + process.env.DB_ADDRESS;
 // dbString = dbString + ":" + dbconf.dbcredentials.port;
 dbString =
   dbString +
