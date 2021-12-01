@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
+const http = require("http");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -165,7 +166,7 @@ app.use(
 app.use(function (req, res, next) {
   next(createError(404));
 });
-var port = normalizePort(process.env.PORT || "3000");
+var port = process.env.PORT || "3333";
 app.set("port", port);
 
 // error handler
