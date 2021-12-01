@@ -43,7 +43,7 @@ var prefix = "/api/";
 console.log();
 app.use(
   `${prefix}users`,
-  require("./Controllers/UsersController")({ MongoDBConnection })
+  require("./controllers/UsersController")({ MongoDBConnection })
 );
 // app.use(
 //   `${prefix}menuModule`,
@@ -51,7 +51,7 @@ app.use(
 // );
 app.use(
   `${prefix}role`,
-  require("./Controllers/RoleController")({ MongoDBConnection })
+  require("./controllers/RoleController")({ MongoDBConnection })
 );
 // app.use(
 //   `${prefix}callback`,
@@ -107,7 +107,7 @@ app.use(
 // );
 app.use(
   `${prefix}home`,
-  require("./Controllers/HomeController")({ MongoDBConnection })
+  require("./controllers/HomeController")({ MongoDBConnection })
 );
 // app.use(
 //   `${prefix}team`,
