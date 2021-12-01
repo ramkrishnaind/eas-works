@@ -1,0 +1,10 @@
+{
+  "dbcredentials": {
+    "user": "ramkrishnaindal",
+    "password": "51ByOJaYZl9kpCbK",
+    "database": "esaworks_db",
+    "address": "ramkrishna.yixfe.mongodb.net",
+    "host": "localhost",
+    "port": 27017
+  }
+}
