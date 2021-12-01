@@ -9,7 +9,7 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cors = require("cors");
 const app = express();
-require('dotenv').config()
+require("dotenv").config();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -165,6 +165,8 @@ app.use(
 app.use(function (req, res, next) {
   next(createError(404));
 });
+var port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -176,5 +178,12 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
 
 module.exports = app;
