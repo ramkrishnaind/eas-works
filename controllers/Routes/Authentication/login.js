@@ -122,7 +122,9 @@ function logInHelper(Models) {
       res.send({
         status: true,
         message: "Login Successful",
-        user: req.session.user,
+        result: {
+          user: req.session.user,
+        },
       });
     } catch (e) {
       console.log("login err", e);

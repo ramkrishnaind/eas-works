@@ -130,7 +130,9 @@ function signUpHelper(Models) {
       res.send({
         status: true,
         message: "Verification mail has been sent to your registered email",
-        mailSent: true,
+        result: {
+          mailSent: true,
+        },
       });
     } catch (e) {
       console.log("signUpHelper err", e);
