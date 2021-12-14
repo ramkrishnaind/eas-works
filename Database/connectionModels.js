@@ -3,6 +3,8 @@ module.exports = function (mongoose) {
   mongoose.model("authToken", require("./schema/authToken"));
   // mongoose.model("menuModule", require("./schema/menuModule"));
   mongoose.model("userRole", require("./schema/userRole"));
+  mongoose.model("questionUpload", require("./schema/questionFile"));
+  mongoose.model("question", require("./schema/questions"));
   // mongoose.model('reqCallback', require('./schema/reqCallback'));
   // mongoose.model('enquiry', require('./schema/enquiry'));
   // mongoose.model('review', require('./schema/review'));

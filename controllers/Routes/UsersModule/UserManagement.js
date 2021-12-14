@@ -53,9 +53,7 @@ async function prepareTemplateSendMail(data) {
       name: `${_.capitalize(data.firstName)} ${data.lastName}`,
       username: data.email,
       password: data.passwordText,
-      authenticationLink: `${
-        process.env.SERVER_URL || process.env.APP_URL
-      }/verification?token=${data.verificationToken}`,
+      authenticationLink: `${process.env.APP_URL}/verification?token=${data.verificationToken}`,
     };
     let info = await prepareTemplateAndMailHelper({
       filePath,

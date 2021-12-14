@@ -5,6 +5,7 @@ let dbString = "mongodb+srv://" + process.env.DB_USER;
 dbString = dbString + ":" + process.env.DB_PASSWORD;
 dbString = dbString + "@" + process.env.DB_ADDRESS;
 // dbString = dbString + ":" + dbconf.dbcredentials.port;
+
 dbString =
   dbString +
   "/" +
@@ -13,6 +14,7 @@ dbString =
 // const uri =
 //   "mongodb+srv://ramkrishnaindal:51ByOJaYZl9kpCbK@ramkrishna.yixfe.mongodb.net/test?retryWrites=true&w=majority";
 //   "mongodb+srv://ramkrishnaindal:51ByOJaYZl9kpCbK@ramkrishna.yixfe.mongodb.net/esaworks_db"
+//   "mongodb+srv://ramkrishnaindal:51ByOJaYZl9kpCbK@ramkrishna.yixfe.mongodb.net/esaworks_db
 if (process.env.NODE_ENV == "localDevelopment") {
   dbString = process.env.LOCALDATABASE;
 }

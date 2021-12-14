@@ -54,6 +54,11 @@ app.use(
   `${prefix}role`,
   require("./controllers/RoleController")({ MongoDBConnection })
 );
+app.use(
+  `${prefix}questions`,
+  require("./Controllers/QuestionConroller")({ MongoDBConnection })
+);
+
 // app.use(
 //   `${prefix}callback`,
 //   require("./Controllers/CallbackController")({ MongoDBConnection })
@@ -167,7 +172,7 @@ app.use(
 app.use(function (req, res, next) {
   next(createError(404));
 });
-var port = process.env.PORT || "3333";
+var port = process.env.PORT || "3334";
 app.set("port", port);
 
 // error handler

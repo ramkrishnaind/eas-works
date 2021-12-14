@@ -29,7 +29,7 @@ async function prepareTemplateSendMail(data) {
       name: `${_.capitalize(data.firstName)} ${data.lastName}`,
       username: data.email,
       token: data.verificationToken,
-      authenticationLink: `${process.env.SERVER_URL}/api/users/verification?token=${data.verificationToken}`,
+      authenticationLink: `${process.env.APP_URL}/verification?token=${data.verificationToken}`,
     };
     let info = await prepareTemplateAndMailHelper({
       filePath,
@@ -123,7 +123,7 @@ function signUpHelper(Models) {
 
       // now send mail
       prepareTemplateSendMail(saveUser);
-      let authenticationLink = `${process.env.SERVER_URL}/api/users/verification?token=${hash}`;
+      let authenticationLink = `${process.env.APP_URL}/verification?token=${hash}`;
       // "http://localhost:3000/api/users"
       // }/verificationdata.verificationToken`;
 

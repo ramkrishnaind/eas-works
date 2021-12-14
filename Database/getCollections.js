@@ -1,8 +1,11 @@
 module.exports = function (mongoose) {
   const UserDB = mongoose.model("user");
   const AuthTokenDB = mongoose.model("authToken");
-  // const MenuModuleDB = mongoose.model("menuModule");
+  // const QuestionUploadDB = mongoose.model("questionUpload");
+
   const UserRoleDB = mongoose.model("userRole");
+  const QuestionUploadDB = mongoose.model("questionUpload");
+  const QuestionDB = mongoose.model("question");
   // const ReqCallbackDB = mongoose.model('reqCallback');
   // const EnquiryDB = mongoose.model('enquiry');
   // const ReviewDB = mongoose.model('review');
@@ -43,6 +46,8 @@ module.exports = function (mongoose) {
     AuthTokenDB,
     // MenuModuleDB,
     UserRoleDB,
+    QuestionUploadDB,
+    QuestionDB,
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,

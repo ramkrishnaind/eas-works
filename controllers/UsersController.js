@@ -55,7 +55,7 @@ module.exports = function (conn) {
   router.post("/login", loginFunction(db));
   router.post("/mobileLogin", mobileLoginFunction(db));
   router.post("/forgotPassword", forgotPasswordFunction(db));
-  router.get("/verification", verificationFunction(db));
+  router.post("/verification", verificationFunction(db));
   router.post("/setNewPassword", setNewPasswordFunction(db));
   router.get("/getAuthToken", getAuthTokenFunction(db));
   router.get("/logout", logoutFunction(db));
