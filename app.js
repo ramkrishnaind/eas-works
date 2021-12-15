@@ -56,7 +56,7 @@ app.use(
 );
 app.use(
   `${prefix}questions`,
-  require("./Controllers/QuestionConroller")({ MongoDBConnection })
+  require("./controllers/QuestionConroller")({ MongoDBConnection })
 );
 
 // app.use(
