@@ -48,6 +48,7 @@ function questionHelper(Models) {
       const result = [];
       await qnsData.questions.forEach(async (element, index) => {
         element.fileUploadId = mongoose.Types.ObjectId(element.fileUploadId);
+        console.log("element", element);
         let qns = await new Models.QuestionDB(element).save();
         result.push(qns.toObject());
         if (index === qnsData.questions.length - 1) {

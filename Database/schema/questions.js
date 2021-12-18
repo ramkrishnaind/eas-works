@@ -11,7 +11,6 @@ const schema = new Schema(
     },
     question: {
       type: String,
-      type: false,
     },
     optionsWithAnswers: {
       type: Array,
