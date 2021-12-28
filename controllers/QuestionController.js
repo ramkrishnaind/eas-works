@@ -42,5 +42,7 @@ module.exports = function (conn) {
     uploadQuestionsFile.uploadQuestionsFile(db)
   );
   router.post("/setQuestions", uploadQuestionsFile.questionHelper(db));
+  router.get("/getLatestQuestions", uploadQuestionsFile.getLatestQuestions(db));
+
   return router;
 };

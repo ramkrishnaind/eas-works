@@ -40,4 +40,8 @@ module.exports = function (mongoose) {
   // mongoose.model('finance', require('./schema/finance'));
   // mongoose.model('wishList', require('./schema/wishList'));
   // mongoose.model('otp', require('./schema/otp'));
+  mongoose.model(
+    "talentProfileUpload",
+    require("./schema/talentProfileUpload")
+  );
 };

@@ -56,7 +56,11 @@ app.use(
 );
 app.use(
   `${prefix}questions`,
-  require("./controllers/QuestionConroller")({ MongoDBConnection })
+  require("./controllers/QuestionController")({ MongoDBConnection })
+);
+app.use(
+  `${prefix}talentProfile`,
+  require("./controllers/TalentProfileController")({ MongoDBConnection })
 );
 
 // app.use(

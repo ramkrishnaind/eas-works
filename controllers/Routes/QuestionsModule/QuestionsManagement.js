@@ -41,6 +41,37 @@ function questionUploadHelper(Models) {
   }
   return uploadQuestionsFile;
 }
+function getLatestQuestionHelper(Models) {
+  async function getLatestQuestionsSet(req, res) {
+    try {
+      let questionUpload = await Models.QuestionUploadDB.findOne(
+        {},
+        {},
+        { sort: { createdAt: -1 } }
+      ).exec();
+      questionUpload = questionUpload.toObject();
+      let questions = await Models.QuestionDB.find(
+        { fileUploadId: questionUpload._id },
+        {},
+        {}
+      ).exec();
+      res.send({
+        status: true,
+        message: "Got the questions",
+        questions,
+      });
+    } catch (e) {
+      console.log("getLatestQuestionHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in getting questions",
+      });
+    }
+  }
+  return getLatestQuestionsSet;
+}
+
 function questionHelper(Models) {
   async function questions(req, res) {
     try {
@@ -74,4 +105,5 @@ function questionHelper(Models) {
 module.exports = {
   uploadQuestionsFile: questionUploadHelper,
   questionHelper,
+  getLatestQuestions: getLatestQuestionHelper,
 };
