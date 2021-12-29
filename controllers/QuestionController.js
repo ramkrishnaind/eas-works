@@ -32,17 +32,30 @@ let storage = multer.diskStorage({
 let upload = multer({ storage: storage });
 const uploadQuestionsFile = require("./Routes/QuestionsModule/QuestionsManagement");
 console.log("questionUploadFunc", uploadQuestionsFile);
+const userAuthMiddlewareFunction = require("../Middleware/userAuth");
 module.exports = function (conn) {
   // console.log(conn)
   const db = require("../Database/getCollections")(conn.MongoDBConnection);
+  // const allCollection = require('../Database/getCollections')(conn.MongoDBConnection);
+  const userAuthMiddleware = userAuthMiddlewareFunction.userAuthMiddleware(db);
 
   router.post(
     "/upload",
     upload.single("questionFile"),
     uploadQuestionsFile.uploadQuestionsFile(db)
   );
+  router.post(
+    "/giveTest",
+    userAuthMiddleware,
+    uploadQuestionsFile.giveTest(db)
+  );
   router.post("/setQuestions", uploadQuestionsFile.questionHelper(db));
-  router.get("/getLatestQuestions", uploadQuestionsFile.getLatestQuestions(db));
+  router.post("/getUserTests", uploadQuestionsFile.getUserTests(db));
+  router.get(
+    "/getLatestQuestions",
+    userAuthMiddleware,
+    uploadQuestionsFile.getLatestQuestions(db)
+  );
 
   return router;
 };

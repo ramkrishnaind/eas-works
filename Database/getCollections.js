@@ -6,6 +6,8 @@ module.exports = function (mongoose) {
   const UserRoleDB = mongoose.model("userRole");
   const QuestionUploadDB = mongoose.model("questionUpload");
   const QuestionDB = mongoose.model("question");
+  const UserTestDB = mongoose.model("userTest");
+  const TestAnswerDB = mongoose.model("testAnswer");
   const TalentProfileUploadDB = mongoose.model("talentProfileUpload");
   // const ReqCallbackDB = mongoose.model('reqCallback');
   // const EnquiryDB = mongoose.model('enquiry');
@@ -50,6 +52,8 @@ module.exports = function (mongoose) {
     QuestionUploadDB,
     QuestionDB,
     TalentProfileUploadDB,
+    UserTestDB,
+    TestAnswerDB,
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,

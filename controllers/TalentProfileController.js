@@ -30,12 +30,13 @@ let storage = multer.diskStorage({
   },
 });
 let upload = multer({ storage: storage });
+const userAuthMiddlewareFunction = require("../Middleware/userAuth");
 const talentProfileFile = require("./Routes/TalentProfileModule/TalentProfileManagement");
 console.log("talentProfileFile", talentProfileFile);
 module.exports = function (conn) {
   // console.log(conn)
   const db = require("../Database/getCollections")(conn.MongoDBConnection);
-
+  const userAuthMiddleware = userAuthMiddlewareFunction.userAuthMiddleware(db);
   router.post(
     "/setTalentProfileSteps",
     upload.single("talentProfileFile"),
@@ -43,6 +44,7 @@ module.exports = function (conn) {
   );
   router.get(
     "/getTalentProfileSteps",
+    userAuthMiddleware,
     talentProfileFile.getLatestTalentProfileHelper(db)
   );
 
