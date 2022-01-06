@@ -45,5 +45,6 @@ module.exports = function (mongoose) {
     require("./schema/talentProfileUpload")
   );
   mongoose.model("userTest", require("./schema/userTest"));
+  mongoose.model("talentProfile", require("./schema/talentProfile"));
   mongoose.model("testAnswer", require("./schema/testAnswers"));
 };

@@ -42,6 +42,20 @@ module.exports = function (conn) {
     upload.single("talentProfileFile"),
     talentProfileFile.talentProfileUploadHelper(db)
   );
+  router.post(
+    "/createTalentProfile",
+    talentProfileFile.createTalentProfile(db)
+  );
+  router.post(
+    "/getTalentProfile",
+    userAuthMiddleware,
+    talentProfileFile.getTalentProfile(db)
+  );
+  router.post(
+    "/updateTalentProfile",
+    userAuthMiddleware,
+    talentProfileFile.updateTalentProfile(db)
+  );
   router.get(
     "/getTalentProfileSteps",
     userAuthMiddleware,
