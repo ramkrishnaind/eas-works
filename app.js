@@ -14,6 +14,8 @@ const passport = require("passport");
 app.use(express.urlencoded({ extended: false }));
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const GitHubStrategy = require("passport-github").Strategy;
+var LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
+
 //Middleware
 app.use(express.json());
 app.use(
@@ -34,6 +36,9 @@ const GOOGLE_CLIENT_SECRET = "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";
 const GITHUB_CLIENT_ID = "1d4bf91e551b417d5cd3";
 const GITHUB_CLIENT_SECRET = "ae6c6fafede27a8426dfc3bd610af8e39a19724c";
 
+const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
+const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
+
 authUser = (request, accessToken, refreshToken, profile, done) => {
   return done(null, profile);
 };
@@ -52,6 +57,45 @@ passport.use(
     authUser
   )
 );
+passport.use(
+  new LinkedInStrategy(
+    {
+      clientID: LINKEDIN_CLIENT_ID,
+      clientSecret: LINKEDIN_CLIENT_SECRET,
+      callbackURL: "http://localhost:3334/api/linkedin/callback",
+      scope: ["r_emailaddress", "r_liteprofile"],
+      state: true,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      // asynchronous verification, for effect...
+      process.nextTick(function () {
+        // To keep the example simple, the user's LinkedIn profile is returned to
+        // represent the logged-in user. In a typical application, you would want
+        // to associate the LinkedIn account with a user record in your database,
+        // and return that user instead.
+        return done(null, profile);
+      });
+    }
+  )
+);
+// passport.use(
+//   new LinkedInStrategy(
+//     {
+//       consumerKey: LINKEDIN_CLIENT_ID,
+//       consumerSecret: LINKEDIN_CLIENT_SECRET,
+//       callbackURL: "http://localhost:3334/api/linkedin/callback",
+//     },
+//     function (token, tokenSecret, profile, done) {
+//       process.nextTick(function () {
+//         // To keep the example simple, the user's LinkedIn profile is returned to
+//         // represent the logged-in user.  In a typical application, you would want
+//         // to associate the LinkedIn account with a user record in your database,
+//         // and return that user instead.
+//         return done(null, profile);
+//       });
+//     }
+//   )
+// );
 passport.use(
   new GitHubStrategy(
     {
@@ -111,7 +155,24 @@ app.post("/api/github/getGithubUrl", (req, res, next) => {
     login: req.body.login,
   })(req, res, next);
 });
-
+// app.get("/api/linkedin/getLinkedinUrl", passport.authenticate("linkedin"));
+app.get(
+  "/api/linkedin/getLinkedinUrl",
+  passport.authenticate("linkedin"),
+  function (req, res) {
+    // The request will be redirected to LinkedIn for authentication, so this
+    // function will not be called.
+  }
+);
+app.get(
+  "/api/linkedin/callback",
+  passport.authenticate("linkedin", { failureRedirect: "/" }),
+  function (req, res) {
+    res.redirect(
+      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+    );
+  }
+);
 app.get(
   "/api/github/callback",
   passport.authenticate("github", {
