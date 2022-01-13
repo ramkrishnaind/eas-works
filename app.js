@@ -1,4 +1,3 @@
-const createError = require("http-errors");
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -11,14 +10,176 @@ const usersRouter = require("./routes/users");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
+const passport = require("passport");
+app.use(express.urlencoded({ extended: false }));
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const GitHubStrategy = require("passport-github").Strategy;
+//Middleware
+app.use(express.json());
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize()); // init passport on every route call
+app.use(passport.session()); //allow passport to use "express-session"
+
+//Get the GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET from Google Developer Console
+const GOOGLE_CLIENT_ID =
+  "243499270913-1q6i3qjn2q7n9a7fb0383alg2fetd7it.apps.googleusercontent.com";
+const GOOGLE_CLIENT_SECRET = "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";
+const GITHUB_CLIENT_ID = "1d4bf91e551b417d5cd3";
+const GITHUB_CLIENT_SECRET = "ae6c6fafede27a8426dfc3bd610af8e39a19724c";
+
+authUser = (request, accessToken, refreshToken, profile, done) => {
+  return done(null, profile);
+};
+GitHubStrategy.prototype.authorizationParams = function (options) {
+  return options || {};
+};
+//Use "GoogleStrategy" as the Authentication Strategy
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3334/api/gmail/callback",
+      passReqToCallback: true,
+    },
+    authUser
+  )
+);
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:3334/api/github/callback",
+    },
+    function (accessToken, refreshToken, profile, done) {
+      process.nextTick(function () {
+        done(null, profile);
+        // User.findOne({ id: profile.id }, function (err, res) {
+        //   if (err) return done(err);
+        //   if (res) {
+        //     console.log("user exists");
+        //     return done(null, res);
+        //   } else {
+        //     console.log("insert user");
+        //     var user = new User({
+        //       id: profile.id,
+        //       access_token: accessToken,
+        //       refresh_token: refreshToken,
+        //     });
+        //     user.save(function (err) {
+        //       if (err) return done(err);
+        //       return done(null, user);
+        //     });
+        //   }
+        // });
+      });
+    }
+  )
+);
+// const GitHubStrategy = require("passport-github").Strategy;
+
+// passport.use(
+//   new GitHubStrategy(
+//     {
+//       clientID: GITHUB_CLIENT_ID,
+//       clientSecret: GITHUB_CLIENT_SECRET,
+//       authorizationURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/authorize",
+//       tokenURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/access_token",
+//       userProfileURL: "https://ENTERPRISE_INSTANCE_URL/api/v3/user",
+//       callbackURL: "http://localhost:3334/api/github/callback",
+//     },
+//     function (accessToken, refreshToken, profile, cb) {
+//       User.findOrCreate({ githubId: profile.id }, function (err, user) {
+//         return cb(err, user);
+//       });
+//     }
+//   )
+// );
+app.post("/api/github/getGithubUrl", (req, res, next) => {
+  if (!req.body.login) {
+    return res.sendStatus(400);
+  }
+  passport.authenticate("github", {
+    login: req.body.login,
+  })(req, res, next);
+});
+
+app.get(
+  "/api/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/",
+    scope: ["user"],
+  }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    console.log("req.user", req.user);
+    res.redirect(
+      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+    );
+  }
+);
+app.get(
+  "/api/gmail/getGmailUrl",
+  passport.authenticate("google", { scope: ["email", "profile"] })
+);
+//Use the req.isAuthenticated() function to check if user is Authenticated
+checkAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};
+app.get(
+  "/api/gmail/callback",
+  passport.authenticate("google", {
+    successRedirect: "/api/gmail/getGmailUser",
+    failureRedirect: "/",
+  })
+);
+
+passport.serializeUser((user, done) => {
+  console.log(`\n--------> Serialize User:`);
+  console.log(user);
+  // The USER object is the "authenticated user" from the done() in authUser function.
+  // serializeUser() will attach this user to "req.session.passport.user.{user}", so that it is tied to the session object for each session.
+
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  console.log("\n--------- Deserialized User:");
+  console.log(user);
+  // This is the {user} that was saved in req.session.passport.user.{user} in the serializationUser()
+  // deserializeUser will attach this {user} to the "req.user.{user}", so that it can be used anywhere in the App.
+
+  done(null, user);
+});
+//Define the Protected Route, by using the "checkAuthenticated" function defined above as middleware
+app.get("/api/gmail/getGmailUser", checkAuthenticated, (req, res) => {
+  console.log("req.user", req.user);
+  res.redirect("/?name=" + req.user.displayName + "&email=" + req.user.email);
+});
+// app.get(
+//   "/api/gmail/getGmailUrl",
+//   passport.authenticate("google", {
+//     scope: ["profile", "email"],
+//   })
+// );
 console.log("rooturl", process.env.SERVER_URL);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -54,6 +215,7 @@ app.use(
   `${prefix}role`,
   require("./controllers/RoleController")({ MongoDBConnection })
 );
+app.use(`${prefix}gmail`, require("./controllers/GmailController")());
 app.use(
   `${prefix}questions`,
   require("./controllers/QuestionController")({ MongoDBConnection })

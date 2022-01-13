@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -16,6 +16,7 @@
     "express": "~4.16.1",
     "express-jwt": "^6.0.0",
     "express-session": "^1.17.2",
+    "googleapis": "^92.0.0",
     "handlebars": "^4.7.7",
     "http-errors": "~1.6.3",
     "joi": "^17.4.0",
@@ -30,7 +31,12 @@
     "nanoid": "^3.1.30",
     "nodemailer": "^6.6.1",
     "nodemailer-smtp-transport": "^2.7.4",
-    "otp-generator": "^3.0.0"
+    "otp-generator": "^3.0.0",
+    "passport": "^0.4.1",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
