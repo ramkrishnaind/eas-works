@@ -58,7 +58,7 @@ module.exports = function (conn) {
   );
   router.get(
     "/getTalentProfileSteps",
-    userAuthMiddleware,
+    // userAuthMiddleware,
     talentProfileFile.getLatestTalentProfileHelper(db)
   );
 
