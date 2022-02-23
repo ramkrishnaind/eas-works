@@ -1,7 +1,10 @@
 const _ = require("lodash");
-const fs = require("fs");
-const path = require("path");
+
 const Joi = require("joi");
+var fs = require('fs');
+var path = require('path');
+// In newer Node.js versions where process is already global this isn't necessary.
+var process = require("process");
 var mongoose = require("mongoose");
 const errorResponseHelper = require("../../../Helper/errorResponse");
 
@@ -43,45 +46,27 @@ function getLatestTalentProfileHelper(Models) {
       ).exec();
       talentProfile = talentProfile.toObject();
       talentProfile = talentProfile.steps;
-      const primarySkills = object.keys(talentProfile);
-      primarySkills.forEach((primSkill) => {
-        const modules = object.keys(talentProfile[primSkill]);
-        modules.forEach((module) => {
-          const products = talentProfile[primSkill][module].Product;
-          products.forEach((prod, index) => {
-            try {
-              if (
-                fs.existsSync(
-                  path.join(
-                    process.cwd(),
-                    "public",
-                    "images",
-                    prod.toLowerCase().trim() + ".png"
-                  )
-                )
-              ) {
-                //file exists
-                talentProfile[primSkill][module].Product[index] = {
-                  name: prod,
-                  imageUrl: "/images/" + prod.toLowerCase().trim() + ".png",
-                };
-              } else {
-                talentProfile[primSkill][module].Product[index] = {
-                  name: prod,
-                  imageUrl: "",
-                };
-              }
-            } catch (err) {
-              console.error(err);
-              talentProfile[primSkill][module].Product[index] = {
-                name: prod,
-                imageUrl: "",
-              };
-            }
+      const files = fs.readdirSync(path.join(
+        process.cwd(),
+        "public",
+        "images"));
+     
+        files.forEach(function (file, index) {
+          const fileWithoutExtension=file.replace(/\.[^/.]+$/, "").toLowerCase();
+          const primarySkills = Object.keys(talentProfile);
+          primarySkills.forEach((primSkill) => {
+            const modules = Object.keys(talentProfile[primSkill]);
+            modules.forEach((module) => {
+              const products = talentProfile[primSkill][module].Product;
+              if(products.some(pr=>pr.name.toLowerCase().includes(fileWithoutExtension))){
+                const foundIndex=talentProfile[primSkill][module].Product.findIndex(pr=>pr.name.toLowerCase().includes(fileWithoutExtension))
+                talentProfile[primSkill][module].Product[foundIndex].imageUrl='/images/'+file
+              }              
+            });
           });
-        });
-      });
 
+        });
+      
       res.send({
         status: true,
         message: "Got the talent profile options",
