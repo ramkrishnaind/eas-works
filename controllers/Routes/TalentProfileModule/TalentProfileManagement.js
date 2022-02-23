@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const fs = require("fs");
+const path = require("path");
 const Joi = require("joi");
 var mongoose = require("mongoose");
 const errorResponseHelper = require("../../../Helper/errorResponse");
@@ -41,6 +43,45 @@ function getLatestTalentProfileHelper(Models) {
       ).exec();
       talentProfile = talentProfile.toObject();
       talentProfile = talentProfile.steps;
+      const primarySkills = object.keys(talentProfile);
+      primarySkills.forEach((primSkill) => {
+        const modules = object.keys(talentProfile[primSkill]);
+        modules.forEach((module) => {
+          const products = talentProfile[primSkill][module].Product;
+          products.forEach((prod, index) => {
+            try {
+              if (
+                fs.existsSync(
+                  path.join(
+                    process.cwd(),
+                    "public",
+                    "images",
+                    prod.toLowerCase().trim() + ".png"
+                  )
+                )
+              ) {
+                //file exists
+                talentProfile[primSkill][module].Product[index] = {
+                  name: prod,
+                  imageUrl: "/images/" + prod.toLowerCase().trim() + ".png",
+                };
+              } else {
+                talentProfile[primSkill][module].Product[index] = {
+                  name: prod,
+                  imageUrl: "",
+                };
+              }
+            } catch (err) {
+              console.error(err);
+              talentProfile[primSkill][module].Product[index] = {
+                name: prod,
+                imageUrl: "",
+              };
+            }
+          });
+        });
+      });
+
       res.send({
         status: true,
         message: "Got the talent profile options",
