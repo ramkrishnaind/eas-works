@@ -4,19 +4,14 @@ var Schema = mongoose.Schema;
 
 const schema = new Schema(
   {
+    file: {
+      type: Object,
+      required: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       default: null,
-    },
-    steps: {
-      type: Object,
-    },
-    feedbackSteps: {
-      type: Object,
-    },
-    editSteps: {
-      type: Object,
     },
   },
   {
@@ -35,7 +30,7 @@ const schema = new Schema(
     },
   },
   {
-    collection: "talentProfiles",
+    collection: "talentProfileVideoUploads",
   }
 );
 

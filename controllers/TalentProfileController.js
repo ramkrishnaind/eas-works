@@ -43,6 +43,15 @@ module.exports = function (conn) {
     talentProfileFile.talentProfileUploadHelper(db)
   );
   router.post(
+    "/setTalentProfileVideo",
+    upload.single("talentProfileVideo"),
+    talentProfileFile.talentProfileVideoUploadHelper(db)
+  );
+  router.post(
+    "/getTalentProfileVideo",
+    talentProfileFile.getTalentProfileVideoHelper(db)
+  );
+  router.post(
     "/createTalentProfile",
     talentProfileFile.createTalentProfile(db)
   );
@@ -55,6 +64,16 @@ module.exports = function (conn) {
     "/updateTalentProfile",
     userAuthMiddleware,
     talentProfileFile.updateTalentProfile(db)
+  );
+  router.post(
+    "/updateTalentProfileFeedback",
+    userAuthMiddleware,
+    talentProfileFile.updateTalentProfileFeedback(db)
+  );
+  router.post(
+    "/updateTalentProfileEditSteps",
+    userAuthMiddleware,
+    talentProfileFile.updateTalentProfileEditSteps(db)
   );
   router.get(
     "/getTalentProfileSteps",
