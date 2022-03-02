@@ -11,6 +11,7 @@ const { nanoid } = require("nanoid");
 const createUserSchema = Joi.object({
   firstName: Joi.string().trim().required(),
   lastName: Joi.string().trim(),
+  company: Joi.string().trim(),
   email: Joi.string().email().trim().required(),
   // mobile: Joi.number().required(),
   // countryCode: Joi.number(),
@@ -86,6 +87,7 @@ function createUserHelper(Models) {
         "firstName",
         "lastName",
         "email",
+        "company",
         "userRole",
       ]);
 
