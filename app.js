@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const GitHubStrategy = require("passport-github").Strategy;
 var LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
-
+// const { CityLite } = require('country-state-city-js')
 //Middleware
 app.use(express.json());
 app.use(
@@ -38,7 +38,8 @@ const GITHUB_CLIENT_SECRET = "ae6c6fafede27a8426dfc3bd610af8e39a19724c";
 
 const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
 const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
-
+// const cities = CityLite("IN", "MH")
+// console.log("cities", cities)
 authUser = (request, accessToken, refreshToken, profile, done) => {
   return done(null, profile);
 };
@@ -285,7 +286,10 @@ app.use(
   `${prefix}talentProfile`,
   require("./controllers/TalentProfileController")({ MongoDBConnection })
 );
-
+app.use(
+  `${prefix}location`,
+  require("./controllers/CountryStateCityController")({ MongoDBConnection })
+);
 // app.use(
 //   `${prefix}callback`,
 //   require("./Controllers/CallbackController")({ MongoDBConnection })
