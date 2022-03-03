@@ -52,6 +52,24 @@ module.exports = function (conn) {
     talentProfileFile.getTalentProfileVideoHelper(db)
   );
   router.post(
+    "/setTalentProfileResume",
+    upload.single("talentProfileResume"),
+    talentProfileFile.talentProfileResumeUploadHelper(db)
+  );
+  router.post(
+    "/getTalentProfileResume",
+    talentProfileFile.getTalentProfileResumeHelper(db)
+  );
+  router.post(
+    "/setTalentProfilePhoto",
+    upload.single("talentProfilePhoto"),
+    talentProfileFile.talentProfilePhotoUploadHelper(db)
+  );
+  router.post(
+    "/getTalentProfilePhoto",
+    talentProfileFile.getTalentProfilePhotoHelper(db)
+  );
+  router.post(
     "/createTalentProfile",
     talentProfileFile.createTalentProfile(db)
   );

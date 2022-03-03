@@ -48,6 +48,14 @@ module.exports = function (mongoose) {
     "talentProfileVideoUpload",
     require("./schema/talentProfileVideoUpload")
   );
+  mongoose.model(
+    "talentProfileResumeUpload",
+    require("./schema/talentProfileResumeUpload")
+  );
+  mongoose.model(
+    "talentProfilePhotoUpload",
+    require("./schema/talentProfilePhotoUpload")
+  );
   mongoose.model("userTest", require("./schema/userTest"));
   mongoose.model("talentProfile", require("./schema/talentProfile"));
   mongoose.model("testAnswer", require("./schema/testAnswers"));

@@ -11,6 +11,8 @@ module.exports = function (mongoose) {
   const TalentProfileUploadDB = mongoose.model("talentProfileUpload");
   const TalentProfileVideoUploadDB = mongoose.model("talentProfileVideoUpload");
   const TalentProfileDB = mongoose.model("talentProfile");
+  const TalentProfileResumeUploadDB = mongoose.model("talentProfileResumeUpload");
+  const TalentProfilePhotoUploadDB = mongoose.model("talentProfilePhotoUpload");
   // const ReqCallbackDB = mongoose.model('reqCallback');
   // const EnquiryDB = mongoose.model('enquiry');
   // const ReviewDB = mongoose.model('review');
@@ -58,6 +60,8 @@ module.exports = function (mongoose) {
     TestAnswerDB,
     TalentProfileDB,
     TalentProfileVideoUploadDB,
+    TalentProfileResumeUploadDB,
+    TalentProfilePhotoUploadDB,
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,

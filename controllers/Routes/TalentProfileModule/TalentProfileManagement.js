@@ -64,6 +64,92 @@ function talentProfileVideoUploadHelper(Models) {
   }
   return uploadTalentProfileFile;
 }
+
+function talentProfileResumeUploadHelper(Models) {
+  async function uploadTalentProfileFile(req, res) {
+    try {
+      // console.log("talentProfileData", talentProfileData);
+      let talentProfileData = _.pick(req.body, ["userId"]);
+      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.file = req.file;
+      let talentProfileUpload = await new Models.TalentProfileResumeUploadDB(
+        talentProfileData
+      ).save();
+      talentProfileUpload = talentProfileUpload.toObject();
+
+      res.send({
+        status: true,
+        message: "File Upladed successfully",
+        talentProfileUpload,
+      });
+    } catch (e) {
+      console.log("talentProfileUploadHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in talent profile Upload",
+      });
+    }
+  }
+  return uploadTalentProfileFile;
+}
+function talentProfilePhotoUploadHelper(Models) {
+  async function uploadTalentProfileFile(req, res) {
+    try {
+      // console.log("talentProfileData", talentProfileData);
+      let talentProfileData = _.pick(req.body, ["userId"]);
+      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.file = req.file;
+      let talentProfileUpload = await new Models.TalentProfilePhotoUploadDB(
+        talentProfileData
+      ).save();
+      talentProfileUpload = talentProfileUpload.toObject();
+
+      res.send({
+        status: true,
+        message: "File Upladed successfully",
+        talentProfileUpload,
+      });
+    } catch (e) {
+      console.log("talentProfileUploadHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in talent profile Upload",
+      });
+    }
+  }
+  return uploadTalentProfileFile;
+}
+
+function talentProfileVideoUploadHelper(Models) {
+  async function uploadTalentProfileFile(req, res) {
+    try {
+      // console.log("talentProfileData", talentProfileData);
+      let talentProfileData = _.pick(req.body, ["userId"]);
+      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.file = req.file;
+      let talentProfileUpload = await new Models.TalentProfileVideoUploadDB(
+        talentProfileData
+      ).save();
+      talentProfileUpload = talentProfileUpload.toObject();
+
+      res.send({
+        status: true,
+        message: "File Upladed successfully",
+        talentProfileUpload,
+      });
+    } catch (e) {
+      console.log("talentProfileUploadHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in talent profile Upload",
+      });
+    }
+  }
+  return uploadTalentProfileFile;
+}
 function getLatestTalentProfileHelper(Models) {
   async function getLatestTalentProfile(req, res) {
     try {
@@ -175,7 +261,64 @@ function getTalentProfileVideoHelper(Models) {
   }
   return getTalentProfileVideo;
 }
+function getTalentProfileResumeHelper(Models) {
+  async function getTalentProfileVideo(req, res) {
+    let data = _.pick(req.body, ["userId"]);
+    // let getAllTests
 
+    try {
+      let talentProfile = await Models.TalentProfileResumeUploadDB.findOne(
+        { userId: mongoose.Types.ObjectId(data.userId) },
+        { 'file': 1, "userId": 1 },
+        { sort: { createdAt: -1 } }
+      ).exec();
+      talentProfile = talentProfile.toObject();
+      //  talentProfile.video = talentProfile.file;
+      res.send({
+        status: true,
+        message: "Got the talent profile resume",
+        userData: talentProfile,
+      });
+    } catch (e) {
+      console.log("getLatestTalentProfileHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in getting talent profile",
+      });
+    }
+  }
+  return getTalentProfileVideo;
+}
+function getTalentProfilePhotoHelper(Models) {
+  async function getTalentProfileVideo(req, res) {
+    let data = _.pick(req.body, ["userId"]);
+    // let getAllTests
+
+    try {
+      let talentProfile = await Models.TalentProfilePhotoUploadDB.findOne(
+        { userId: mongoose.Types.ObjectId(data.userId) },
+        { 'file': 1, "userId": 1 },
+        { sort: { createdAt: -1 } }
+      ).exec();
+      talentProfile = talentProfile.toObject();
+      //  talentProfile.video = talentProfile.file;
+      res.send({
+        status: true,
+        message: "Got the talent profile photo",
+        userData: talentProfile,
+      });
+    } catch (e) {
+      console.log("getLatestTalentProfileHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in getting talent profile",
+      });
+    }
+  }
+  return getTalentProfileVideo;
+}
 function createTalentProfileHelper(Models) {
   async function createTalentProfile(req, res) {
     try {
@@ -293,9 +436,13 @@ function updateTalentProfileEditStepsHelper(Models) {
 }
 module.exports = {
   talentProfileVideoUploadHelper,
+  talentProfileResumeUploadHelper,
+  talentProfilePhotoUploadHelper,
   talentProfileUploadHelper,
   getLatestTalentProfileHelper,
   getTalentProfileVideoHelper,
+  getTalentProfileResumeHelper,
+  getTalentProfilePhotoHelper,
   getTalentProfile: getTalentProfileHelper,
   createTalentProfile: createTalentProfileHelper,
   updateTalentProfile: updateTalentProfileHelper,
