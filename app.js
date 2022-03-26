@@ -287,6 +287,10 @@ app.use(
   require("./controllers/TalentProfileController")({ MongoDBConnection })
 );
 app.use(
+  `${prefix}employerProfile`,
+  require("./controllers/EmployerProfileController")({ MongoDBConnection })
+);
+app.use(
   `${prefix}location`,
   require("./controllers/CountryStateCityController")({ MongoDBConnection })
 );
