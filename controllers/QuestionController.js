@@ -53,7 +53,7 @@ module.exports = function (conn) {
   router.post("/getUserTests", uploadQuestionsFile.getUserTests(db));
   router.get(
     "/getLatestQuestions",
-    userAuthMiddleware,
+    // userAuthMiddleware,
     uploadQuestionsFile.getLatestQuestions(db)
   );
 
