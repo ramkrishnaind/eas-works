@@ -33,8 +33,8 @@ app.use(passport.session()); //allow passport to use "express-session"
 const GOOGLE_CLIENT_ID =
   "243499270913-1q6i3qjn2q7n9a7fb0383alg2fetd7it.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "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";
-const GITHUB_CLIENT_ID = "7ee1b0a43b73c473e120";
-const GITHUB_CLIENT_SECRET = "3d8beec6b6a6cb3bbf48a19969dd5b076ecc1535";
+const GITHUB_CLIENT_ID = "7987dcae3dde97f43cb7";
+const GITHUB_CLIENT_SECRET = "686d21e5585c2d50766edecffdaa516276a5f3e8";
 
 const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
 const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
@@ -184,7 +184,7 @@ app.get(
     // Successful authentication, redirect home.
     console.log("req.user", req.user);
     res.redirect(
-      "/?name=" + req.user.displayName + "&email=" + JSON.stringify(req.user)
+      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
     );
   }
 );
