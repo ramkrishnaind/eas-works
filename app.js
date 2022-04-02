@@ -184,7 +184,7 @@ app.get(
     // Successful authentication, redirect home.
     console.log("req.user", req.user);
     res.redirect(
-      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+      "/?name=" + req.user.displayName + "&email=" + JSON.stringify(req.user)
     );
   }
 );
