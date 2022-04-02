@@ -33,8 +33,8 @@ app.use(passport.session()); //allow passport to use "express-session"
 const GOOGLE_CLIENT_ID =
   "243499270913-1q6i3qjn2q7n9a7fb0383alg2fetd7it.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET = "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";
-const GITHUB_CLIENT_ID = "1d4bf91e551b417d5cd3";
-const GITHUB_CLIENT_SECRET = "ae6c6fafede27a8426dfc3bd610af8e39a19724c";
+const GITHUB_CLIENT_ID = "7ee1b0a43b73c473e120";
+const GITHUB_CLIENT_SECRET = "5226cf0d71b50533bea35159a5757079e5ecb416";
 
 const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
 const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
@@ -52,7 +52,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3334/api/gmail/callback",
+      callbackURL: "https://eas-works.herokuapp.com/api/gmail/callback",
       passReqToCallback: true,
     },
     authUser
@@ -63,7 +63,7 @@ passport.use(
     {
       clientID: LINKEDIN_CLIENT_ID,
       clientSecret: LINKEDIN_CLIENT_SECRET,
-      callbackURL: "http://localhost:3334/api/linkedin/callback",
+      callbackURL: "https://eas-works.herokuapp.com/api/linkedin/callback",
       scope: ["r_emailaddress", "r_liteprofile"],
       state: true,
     },
@@ -84,7 +84,7 @@ passport.use(
 //     {
 //       consumerKey: LINKEDIN_CLIENT_ID,
 //       consumerSecret: LINKEDIN_CLIENT_SECRET,
-//       callbackURL: "http://localhost:3334/api/linkedin/callback",
+//       callbackURL: "https://eas-works.herokuapp.com/api/linkedin/callback",
 //     },
 //     function (token, tokenSecret, profile, done) {
 //       process.nextTick(function () {
@@ -102,7 +102,7 @@ passport.use(
     {
       clientID: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: "http://localhost:3334/api/github/callback",
+      callbackURL: "https://eas-works.herokuapp.com/api/github/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       process.nextTick(function () {
@@ -139,7 +139,7 @@ passport.use(
 //       authorizationURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/authorize",
 //       tokenURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/access_token",
 //       userProfileURL: "https://ENTERPRISE_INSTANCE_URL/api/v3/user",
-//       callbackURL: "http://localhost:3334/api/github/callback",
+//       callbackURL: "https://eas-works.herokuapp.com/api/github/callback",
 //     },
 //     function (accessToken, refreshToken, profile, cb) {
 //       User.findOrCreate({ githubId: profile.id }, function (err, user) {
