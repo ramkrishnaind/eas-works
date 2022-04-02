@@ -49,6 +49,34 @@ module.exports = function (conn) {
     // userAuthMiddleware,
     employerProfileFile.getLatestEmployerProfileHelper(db)
   );
+  router.post(
+    "/createEmployerProfile",
+    employerProfileFile.createEmployerProfileHelper(db)
+  );
+  router.post(
+    "/getEmployerProfile",
+    // userAuthMiddleware,
+    employerProfileFile.getEmployerProfileHelper(db)
+  );
+  router.post(
+    "/updateEmployerProfile",
+    // userAuthMiddleware,
+    employerProfileFile.updateEmployerProfileHelper(db)
+  );
 
+  router.post(
+    "/updateEmployerProfileEditSteps",
+    // userAuthMiddleware,
+    employerProfileFile.updateEmployerProfileEditStepsHelper(db)
+  );
+  router.post(
+    "/setEmployerProfilePhoto",
+    upload.single("employerProfilePhoto"),
+    employerProfileFile.employerProfilePhotoUploadHelper(db)
+  );
+  router.post(
+    "/getEmployerProfilePhoto",
+    employerProfileFile.getEmployerProfilePhotoHelper(db)
+  );
   return router;
 };

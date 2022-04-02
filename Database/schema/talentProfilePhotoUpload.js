@@ -30,7 +30,7 @@ const schema = new Schema(
     },
   },
   {
-    collection: "talentProfileVideoUploads",
+    collection: "talentProfilePhotoUploads",
   }
 );
 

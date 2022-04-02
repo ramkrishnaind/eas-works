@@ -5,6 +5,7 @@ module.exports = function (mongoose) {
   mongoose.model("userRole", require("./schema/userRole"));
   mongoose.model("questionUpload", require("./schema/questionFile"));
   mongoose.model("question", require("./schema/questions"));
+  mongoose.model("employerProfile", require("./schema/employerProfile"));
   // mongoose.model('reqCallback', require('./schema/reqCallback'));
   // mongoose.model('enquiry', require('./schema/enquiry'));
   // mongoose.model('review', require('./schema/review'));
@@ -59,6 +60,10 @@ module.exports = function (mongoose) {
   mongoose.model(
     "talentProfilePhotoUpload",
     require("./schema/talentProfilePhotoUpload")
+  );
+  mongoose.model(
+    "employerProfilePhotoUpload",
+    require("./schema/employerProfilePhotoUpload")
   );
   mongoose.model("userTest", require("./schema/userTest"));
   mongoose.model("talentProfile", require("./schema/talentProfile"));

@@ -14,6 +14,8 @@ module.exports = function (mongoose) {
   const TalentProfileResumeUploadDB = mongoose.model("talentProfileResumeUpload");
   const TalentProfilePhotoUploadDB = mongoose.model("talentProfilePhotoUpload");
   const EmployerProfileUploadDB = mongoose.model("employerProfileUploads")
+  const EmployerProfileDB = mongoose.model("employerProfile")
+  const EmployerProfilePhotoUploadDB = mongoose.model("employerProfilePhotoUpload");
   // const ReqCallbackDB = mongoose.model('reqCallback');
   // const EnquiryDB = mongoose.model('enquiry');
   // const ReviewDB = mongoose.model('review');
@@ -63,7 +65,9 @@ module.exports = function (mongoose) {
     TalentProfileVideoUploadDB,
     TalentProfileResumeUploadDB,
     TalentProfilePhotoUploadDB,
-    EmployerProfileUploadDB
+    EmployerProfileUploadDB,
+    EmployerProfileDB,
+    EmployerProfilePhotoUploadDB
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,
