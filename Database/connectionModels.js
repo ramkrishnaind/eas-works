@@ -46,6 +46,10 @@ module.exports = function (mongoose) {
     require("./schema/talentProfileUpload")
   );
   mongoose.model(
+    "chatUser",
+    require("./schema/chatUser")
+  );
+  mongoose.model(
     "employerProfileUploads",
     require("./schema/employerProfileUpload")
   );

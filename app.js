@@ -7,8 +7,18 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const socketio = require('socket.io');
+const formatMessage = require('./helpers/formatDate')
+const {
+  getActiveUser,
+  exitRoom,
+  newUser,
+  getIndividualRoomUsers
+} = require('./helpers/userHelper');
+
 const cors = require("cors");
 const app = express();
+// const server = http.createServer(app);
 require("dotenv").config();
 const passport = require("passport");
 app.use(express.urlencoded({ extended: false }));
@@ -421,6 +431,57 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 var server = http.createServer(app);
+const io = socketio(server);
+// this block will run when the client connects
+io.on('connection', socket => {
+  socket.on('joinRoom', async ({ username, room }) => {
+    const user = await newUser(socket.id, username, room);
+
+    socket.join(user.room);
+
+    // General welcome
+    socket.emit('message', formatMessage("WebCage", 'Messages are limited to this room! '));
+
+    // Broadcast everytime users connects
+    socket.broadcast
+      .to(user.room)
+      .emit(
+        'message',
+        formatMessage("WebCage", `${user.username} has joined the room`)
+      );
+
+    // Current active users and room name
+    io.to(user.room).emit('roomUsers', {
+      room: user.room,
+      users: await getIndividualRoomUsers(user.room)
+    });
+  });
+
+  // Listen for client message
+  socket.on('chatMessage', async msg => {
+    const user = await getActiveUser(socket.id);
+    console.log("user", user)
+    io.to(user.room).emit('message', formatMessage(user.username, msg));
+  });
+
+  // Runs when client disconnects
+  socket.on('disconnect', async () => {
+    const user = await exitRoom(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        formatMessage("WebCage", `${user.username} has left the room`)
+      );
+
+      // Current active users and room name
+      io.to(user.room).emit('roomUsers', {
+        room: user.room,
+        users: await getIndividualRoomUsers(user.room)
+      });
+    }
+  });
+});
 
 /**
  * Listen on provided port, on all network interfaces.

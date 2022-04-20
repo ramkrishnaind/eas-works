@@ -1,11 +1,11 @@
 const mongoose = require("mongoose"),
   dbconf = require("../Database/db.json");
-
-let dbString = "mongodb+srv://" + process.env.DB_USER;
-dbString = dbString + ":" + process.env.DB_PASSWORD;
-dbString = dbString + "@" + process.env.DB_ADDRESS;
+let dbString = "mongodb+srv://ramkrishnaindal:nWDMvHVL63V4wFbu@ramkrishna.yixfe.mongodb.net"
+// let dbString = "mongodb+srv://" + process.env.DB_USER;
+// dbString = dbString + ":" + process.env.DB_PASSWORD;
+// dbString = dbString + "@" + process.env.DB_ADDRESS;
 // dbString = dbString + ":" + dbconf.dbcredentials.port;
-
+console.log("dbString is", dbString);
 dbString =
   dbString +
   "/" +
@@ -18,7 +18,7 @@ dbString =
 if (process.env.NODE_ENV == "localDevelopment") {
   dbString = process.env.LOCALDATABASE;
 }
-console.log("dbString is", dbString);
+
 var conn1 = mongoose.createConnection(dbString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
