@@ -481,7 +481,7 @@ io.on('connection', socket => {
     await createChatRoomMessages(chatRoomId, userId, message);
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    const allMessages = [...chatRoomMessages, ...chatRoomFiles]
+    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -492,6 +492,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
+    allMessages = allMessages.map(m => await getUser(m.userId))
     socket.emit('getRoomMessages', {
       chatRoomId,
       messages: allMessages
@@ -500,7 +501,7 @@ io.on('connection', socket => {
   socket.on('getRoomMessages', async ({ chatRoomId }) => {
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    const allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -511,6 +512,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
+    allMessages = allMessages.map(m => await getUser(m.userId))
     socket.emit('getRoomMessages', {
       chatRoomId,
       messages: allMessages
@@ -520,7 +522,7 @@ io.on('connection', socket => {
     await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    const allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -531,6 +533,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
+    allMessages = allMessages.map(m => await getUser(m.userId))
     socket.emit('getRoomMessages', {
       chatRoomId,
       messages: allMessages
