@@ -8,13 +8,11 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const socketio = require('socket.io');
-const formatMessage = require('./helpers/formatDate')
+
 const {
-  getActiveUser,
-  exitRoom,
-  newUser,
-  getIndividualRoomUsers
+  getUser, findUsers,
 } = require('./helpers/userHelper');
+const { getChatRooms, createChatRooms, createChatRoomMessages, getChatRoomMessages, createChatRoomFileMessages, getChatRoomFiles } = require('./helpers/chatRoomsHelper')
 
 const cors = require("cors");
 const app = express();
@@ -434,53 +432,112 @@ var server = http.createServer(app);
 const io = socketio(server);
 // this block will run when the client connects
 io.on('connection', socket => {
-  socket.on('joinRoom', async ({ username, room }) => {
-    const user = await newUser(socket.id, username, room);
 
-    socket.join(user.room);
+  socket.on('getUsers', async ({ userRole, userId }) => {
+    let users;
+    const user = await getUser(userId);
+    switch (userRole) {
+      case "freelancer":
 
-    // General welcome
-    socket.emit('message', formatMessage("WebCage", 'Messages are limited to this room! '));
+      case "employer":
 
-    // Broadcast everytime users connects
-    socket.broadcast
-      .to(user.room)
-      .emit(
-        'message',
-        formatMessage("WebCage", `${user.username} has joined the room`)
-      );
-
-    // Current active users and room name
-    io.to(user.room).emit('roomUsers', {
-      room: user.room,
-      users: await getIndividualRoomUsers(user.room)
-    });
-  });
-
-  // Listen for client message
-  socket.on('chatMessage', async msg => {
-    const user = await getActiveUser(socket.id);
-    console.log("user", user)
-    io.to(user.room).emit('message', formatMessage(user.username, msg));
-  });
-
-  // Runs when client disconnects
-  socket.on('disconnect', async () => {
-    const user = await exitRoom(socket.id);
-
-    if (user) {
-      io.to(user.room).emit(
-        'message',
-        formatMessage("WebCage", `${user.username} has left the room`)
-      );
-
-      // Current active users and room name
-      io.to(user.room).emit('roomUsers', {
-        room: user.room,
-        users: await getIndividualRoomUsers(user.room)
-      });
+        users = await findUsers({ role: "admin", active: 1 })
+        socket.emit('getUsers', {
+          data: [{ key: "admin", users }],
+          from: user
+        })
+        break;
+      case "admin":
+      default:
+        const freelancers = await findUsers({ role: "freelancer", active: 1 })
+        const employers = await findUsers({ role: "employer", active: 1 })
+        socket.emit('getUsers', {
+          data: [{ key: "freelancer", freelancers }, { key: "employer", employers }],
+          from: user
+        })
+        break;
     }
   });
+  socket.on('createRoom', async ({ fromUserId, toUserId, isNew }) => {
+    let create = false
+    let chatRoom;
+    if (!isNew) {
+      const chatRooms = getChatRooms([fromUserId, toUserId]);
+      if (chatRooms && chatRooms.length > 0) {
+        create = false
+        chatRoom = chatRooms[0]
+      }
+    } else {
+      create = true
+    }
+    if (create)
+      chatRoom = await createChatRooms([fromUserId, toUserId])
+    let users;
+    socket.emit('createRoom', {
+      room: chatRoom
+    })
+  });
+  socket.on('sendTextMessage', async ({ chatRoomId, userId, message }) => {
+    await createChatRoomMessages(chatRoomId, userId, message);
+    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
+    const allMessages = [...chatRoomMessages, ...chatRoomFiles]
+    function compare(a, b) {
+      if (a.createdAt < b.createdAt) {
+        return -1;
+      }
+      if (a.createdAt > b.createdAt) {
+        return 1;
+      }
+      return 0;
+    }
+    allMessages.sort(compare)
+    socket.emit('getRoomMessages', {
+      chatRoomId,
+      messages: allMessages
+    })
+  });
+  socket.on('getRoomMessages', async ({ chatRoomId }) => {
+    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
+    const allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+    function compare(a, b) {
+      if (a.createdAt < b.createdAt) {
+        return -1;
+      }
+      if (a.createdAt > b.createdAt) {
+        return 1;
+      }
+      return 0;
+    }
+    allMessages.sort(compare)
+    socket.emit('getRoomMessages', {
+      chatRoomId,
+      messages: allMessages
+    })
+  });
+  socket.on('sendFileMessage', async ({ chatRoomId, userId, fileName, fileData }) => {
+    await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
+    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
+    const allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+    function compare(a, b) {
+      if (a.createdAt < b.createdAt) {
+        return -1;
+      }
+      if (a.createdAt > b.createdAt) {
+        return 1;
+      }
+      return 0;
+    }
+    allMessages.sort(compare)
+    socket.emit('getRoomMessages', {
+      chatRoomId,
+      messages: allMessages
+    })
+  });
+
+
 });
 
 /**

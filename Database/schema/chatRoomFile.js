@@ -2,19 +2,16 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let schema = new Schema({
-    socketId: {
-        type: String,
-        default: ""
+    chatRoom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'chatRoom',
+        default: null
     },
-    username: {
-        type: String,
-        default: ""
-    },
-    room: {
-        type: String,
-        default: ""
-    },
-
+    messages: [{
+        userId: mongoose.Schema.Types.ObjectId,
+        fileUrl: String,
+        createdAt: { type: Date, default: new Date() }
+    }]
 }, {
     timestamps: {
         createdAt: 'created',
@@ -30,7 +27,7 @@ let schema = new Schema({
         virtuals: true
     }
 }, {
-    collection: 'chatUser'
+    collection: 'chatRoomFile'
 });
 
 module.exports = schema;

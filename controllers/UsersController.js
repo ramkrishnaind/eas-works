@@ -94,6 +94,11 @@ module.exports = function (conn) {
     userFunction.getUserProperties(db)
   );
   router.post(
+    "/findUsers",
+    userAuthMiddleware,
+    userFunction.findUsers(db)
+  );
+  router.post(
     "/getUserWishList",
     userAuthMiddleware,
     userFunction.getUserWishList(db)

@@ -10,7 +10,9 @@ module.exports = function (mongoose) {
   const TestAnswerDB = mongoose.model("testAnswer");
   const TalentProfileUploadDB = mongoose.model("talentProfileUpload");
   const TalentProfileVideoUploadDB = mongoose.model("talentProfileVideoUpload");
-  const ChatUserDB = mongoose.model("chatUser");
+  const ChatRoomDB = mongoose.model("chatRoom");
+  const ChatRoomMessageDB = mongoose.model("chatRoomMessage");
+  const ChatRoomFileDB = mongoose.model("chatRoomFile");
   const TalentProfileDB = mongoose.model("talentProfile");
   const TalentProfileResumeUploadDB = mongoose.model("talentProfileResumeUpload");
   const TalentProfilePhotoUploadDB = mongoose.model("talentProfilePhotoUpload");
@@ -69,7 +71,9 @@ module.exports = function (mongoose) {
     EmployerProfileUploadDB,
     EmployerProfileDB,
     EmployerProfilePhotoUploadDB,
-    ChatUserDB
+    ChatRoomDB,
+    ChatRoomMessageDB,
+    ChatRoomFileDB
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,

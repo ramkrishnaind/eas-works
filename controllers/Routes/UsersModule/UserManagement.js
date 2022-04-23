@@ -303,6 +303,35 @@ function getUserProperties(Models) {
   }
   return userProperties;
 }
+function findUsers(Models) {
+  async function findusers(req, res) {
+    try {
+      // let validateData = getUserPropertySchema.validate(req.body);
+      // if (validateData.error) {
+      //   throw { status: false, error: validateData, message: "Invalid data" };
+      // }
+
+      // Getting User from Database
+      let Data = await Models.PropertyDB.find({ ...req.body })
+
+      console.log("Data is", Data);
+      if (Data) {
+        // if data found check verified or not
+        res.send({ status: true, message: "requested Users", data: Data });
+      } else {
+        res.send({ status: true, message: "User Properties not found" });
+      }
+    } catch (e) {
+      console.log("createUserHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in SignUp",
+      });
+    }
+  }
+  return findusers;
+}
 function getUserBookings(Models) {
   async function userBookings(req, res) {
     try {
@@ -515,4 +544,5 @@ module.exports = {
   addToWishList,
   removeFromWishList,
   updateUserFunc,
+  findUsers
 };
