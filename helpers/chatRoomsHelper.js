@@ -13,7 +13,7 @@ async function createChatRooms(users) {
 }
 async function createChatRoomFileMessages(chatRoomId, userId, fileName, data) {
     const user = await getUser({ _id: mongoose.Types.ObjectId(userId) })
-    const nameOfFile = "uploads/user/" + user.firstName + "_" + user.lastName + "_" + fileName
+    const nameOfFile = "uploads/chats/" + user.firstName + "_" + user.lastName + "_" + fileName
     fs.writeFile(nameOfFile, data, async (err) => {
         if (err)
             console.log(err);
