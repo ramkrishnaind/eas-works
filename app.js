@@ -481,7 +481,7 @@ io.on('connection', socket => {
     await createChatRoomMessages(chatRoomId, userId, message);
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
+    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -501,7 +501,7 @@ io.on('connection', socket => {
   socket.on('getRoomMessages', async ({ chatRoomId }) => {
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
+    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -522,7 +522,7 @@ io.on('connection', socket => {
     await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
     const chatRoomMessages = await getChatRoomMessages(chatRoomId)
     const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages, ...chatRoomFiles]
+    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -539,7 +539,25 @@ io.on('connection', socket => {
       messages: allMessages
     })
   });
-
+  socket.on('getRoomFileMessages', async ({ chatRoomId }) => {
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
+    let allMessages = [...chatRoomFiles.messages]
+    function compare(a, b) {
+      if (a.createdAt < b.createdAt) {
+        return -1;
+      }
+      if (a.createdAt > b.createdAt) {
+        return 1;
+      }
+      return 0;
+    }
+    allMessages.sort(compare)
+    allMessages = allMessages.map(m => await getUser(m.userId))
+    socket.emit('getRoomFileMessages', {
+      chatRoomId,
+      messages: allMessages
+    })
+  });
 
 });
 
