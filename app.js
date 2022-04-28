@@ -442,7 +442,7 @@ io.on('connection', socket => {
       case "employer":
 
         users = await findUsers({ role: "admin", active: 1 })
-        socket.emit('getUsers', {
+        socket.emit('getUsersResponse', {
           data: [{ key: "admin", users }],
           from: user
         })
@@ -451,7 +451,7 @@ io.on('connection', socket => {
       default:
         const freelancers = await findUsers({ role: "freelancer", active: 1 })
         const employers = await findUsers({ role: "employer", active: 1 })
-        socket.emit('getUsers', {
+        socket.emit('getUsersResponse', {
           data: [{ key: "freelancer", freelancers }, { key: "employer", employers }],
           from: user
         })
@@ -473,7 +473,7 @@ io.on('connection', socket => {
     if (create)
       chatRoom = await createChatRooms([fromUserId, toUserId])
     let users;
-    socket.emit('createRoom', {
+    socket.emit('createRoomResponse', {
       room: chatRoom
     })
   });
@@ -493,7 +493,7 @@ io.on('connection', socket => {
     }
     allMessages.sort(compare)
     allMessages = allMessages.map(m => await getUser(m.userId))
-    socket.emit('getRoomMessages', {
+    socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
     })
@@ -513,7 +513,7 @@ io.on('connection', socket => {
     }
     allMessages.sort(compare)
     allMessages = allMessages.map(m => await getUser(m.userId))
-    socket.emit('getRoomMessages', {
+    socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
     })
@@ -534,7 +534,7 @@ io.on('connection', socket => {
     }
     allMessages.sort(compare)
     allMessages = allMessages.map(m => await getUser(m.userId))
-    socket.emit('getRoomMessages', {
+    socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
     })
@@ -553,7 +553,7 @@ io.on('connection', socket => {
     }
     allMessages.sort(compare)
     allMessages = allMessages.map(m => await getUser(m.userId))
-    socket.emit('getRoomFileMessages', {
+    socket.emit('getRoomFileMessagesResponse', {
       chatRoomId,
       messages: allMessages
     })
