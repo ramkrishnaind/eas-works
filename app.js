@@ -60,7 +60,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://eas-works.herokuapp.com/api/gmail/callback",
+      callbackURL: process.env.SERVER_URL + "/api/gmail/callback",
       passReqToCallback: true,
     },
     authUser
@@ -71,7 +71,7 @@ passport.use(
     {
       clientID: LINKEDIN_CLIENT_ID,
       clientSecret: LINKEDIN_CLIENT_SECRET,
-      callbackURL: "https://eas-works.herokuapp.com/api/linkedin/callback",
+      callbackURL: process.env.SERVER_URL + "/api/linkedin/callback",
       scope: ["r_emailaddress", "r_liteprofile"],
       state: true,
     },
@@ -110,31 +110,35 @@ passport.use(
     {
       clientID: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: "https://eas-works.herokuapp.com/api/github/callback",
+      callbackURL: process.env.SERVER_URL + "/api/github/callback",
     },
+
     function (accessToken, refreshToken, profile, done) {
-      process.nextTick(function () {
-        done(null, profile);
-        // User.findOne({ id: profile.id }, function (err, res) {
-        //   if (err) return done(err);
-        //   if (res) {
-        //     console.log("user exists");
-        //     return done(null, res);
-        //   } else {
-        //     console.log("insert user");
-        //     var user = new User({
-        //       id: profile.id,
-        //       access_token: accessToken,
-        //       refresh_token: refreshToken,
-        //     });
-        //     user.save(function (err) {
-        //       if (err) return done(err);
-        //       return done(null, user);
-        //     });
-        //   }
-        // });
-      });
+      return done(null, profile);
     }
+    // function (accessToken, refreshToken, profile, done) {
+    //   process.nextTick(function () {
+    //     done(null, profile);
+    //     // User.findOne({ id: profile.id }, function (err, res) {
+    //     //   if (err) return done(err);
+    //     //   if (res) {
+    //     //     console.log("user exists");
+    //     //     return done(null, res);
+    //     //   } else {
+    //     //     console.log("insert user");
+    //     //     var user = new User({
+    //     //       id: profile.id,
+    //     //       access_token: accessToken,
+    //     //       refresh_token: refreshToken,
+    //     //     });
+    //     //     user.save(function (err) {
+    //     //       if (err) return done(err);
+    //     //       return done(null, user);
+    //     //     });
+    //     //   }
+    //     // });
+    //   });
+    // }
   )
 );
 // const GitHubStrategy = require("passport-github").Strategy;
@@ -160,9 +164,11 @@ app.post("/api/github/getGithubUrl", (req, res, next) => {
   if (!req.body.login) {
     return res.sendStatus(400);
   }
+  // passport.authenticate('github', { scope: ['user:email'] })
   passport.authenticate("github", {
     login: req.body.login,
-  })(req, res, next);
+  })
+    (req, res, next);
 });
 // app.get("/api/linkedin/getLinkedinUrl", passport.authenticate("linkedin"));
 app.get(
@@ -178,27 +184,40 @@ app.get(
   passport.authenticate("linkedin", { failureRedirect: "/" }),
   function (req, res) {
     res.redirect(
-      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+      process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
     );
   }
 );
+// app.get('/api/github/callback',passport.authenticate('github',{ scope: [ 'user:email' ] }));
 app.get(
-  "/api/github/callback",
-  passport.authenticate("github", {
-    failureRedirect: "/",
-    scope: ["user"],
-  }),
+  "/api/github/callback"
+  , passport.authenticate('github', { failureRedirect: '/' }),
   function (req, res) {
-    // Successful authentication, redirect home.
-    console.log("req.user", req.user);
     res.redirect(
-      "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+      process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
     );
-  }
-);
+  });
+
+// passport.authenticate("github", {
+//   failureRedirect: "/",
+//   scope: ["user"],
+// }),
+// function (req, res) {
+//   // Successful authentication, redirect home.
+//   console.log("req.user", req.user);
+//   res.redirect(
+//     "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+//   );
+// }
+// );
+// const googleMiddleware = (req, res, next) => {
+//   req.session = null;
+//   req.logout();
+//   passport.authenticate("google", { scope: ["email", "profile"] })
+//   next()
+// }
 app.get(
-  "/api/gmail/getGmailUrl",
-  passport.authenticate("google", { scope: ["email", "profile"] })
+  "/api/gmail/getGmailUrl", passport.authenticate("google", { scope: ["email", "profile"] })
 );
 //Use the req.isAuthenticated() function to check if user is Authenticated
 checkAuthenticated = (req, res, next) => {
@@ -210,7 +229,7 @@ checkAuthenticated = (req, res, next) => {
 app.get(
   "/api/gmail/callback",
   passport.authenticate("google", {
-    successRedirect: "/api/gmail/getGmailUser",
+    successRedirect: `/api/gmail/getGmailUser`,
     failureRedirect: "/",
   })
 );
@@ -235,7 +254,7 @@ passport.deserializeUser((user, done) => {
 //Define the Protected Route, by using the "checkAuthenticated" function defined above as middleware
 app.get("/api/gmail/getGmailUser", checkAuthenticated, (req, res) => {
   console.log("req.user", req.user);
-  res.redirect("/?name=" + req.user.displayName + "&email=" + req.user.email);
+  res.redirect(process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.email);
 });
 // app.get(
 //   "/api/gmail/getGmailUrl",
@@ -269,6 +288,7 @@ app.use(
 app.use("/uploads", express.static("uploads"));
 app.set("trust proxy", 1);
 const MongoDBConnection = require("./Database/connection");
+const { networkconnectivity } = require("googleapis/build/src/apis/networkconnectivity");
 var prefix = "/api/";
 
 //app.use('/api/pricing', require('./controllers/pricing.controller')({ MongoDBConnection }));
@@ -492,7 +512,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
-    allMessages = allMessages.map(m => await getUser(m.userId))
+    allMessages = allMessages.map(async m => await getUser(m.userId))
     socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
@@ -512,7 +532,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
-    allMessages = allMessages.map(m => await getUser(m.userId))
+    allMessages = allMessages.map(async m => await getUser(m.userId))
     socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
@@ -533,7 +553,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
-    allMessages = allMessages.map(m => await getUser(m.userId))
+    allMessages = allMessages.map(async m => await getUser(m.userId))
     socket.emit('getRoomMessagesResponse', {
       chatRoomId,
       messages: allMessages
@@ -552,7 +572,7 @@ io.on('connection', socket => {
       return 0;
     }
     allMessages.sort(compare)
-    allMessages = allMessages.map(m => await getUser(m.userId))
+    allMessages = allMessages.map(async m => await getUser(m.userId))
     socket.emit('getRoomFileMessagesResponse', {
       chatRoomId,
       messages: allMessages
