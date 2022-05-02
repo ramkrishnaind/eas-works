@@ -7,12 +7,17 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
-const socketio = require('socket.io');
+const socketio = require("socket.io");
 
+const { getUser, findUsers } = require("./helpers/userHelper");
 const {
-  getUser, findUsers,
-} = require('./helpers/userHelper');
-const { getChatRooms, createChatRooms, createChatRoomMessages, getChatRoomMessages, createChatRoomFileMessages, getChatRoomFiles } = require('./helpers/chatRoomsHelper')
+  getChatRooms,
+  createChatRooms,
+  createChatRoomMessages,
+  getChatRoomMessages,
+  createChatRoomFileMessages,
+  getChatRoomFiles,
+} = require("./helpers/chatRoomsHelper");
 
 const cors = require("cors");
 const app = express();
@@ -25,7 +30,7 @@ const GitHubStrategy = require("passport-github").Strategy;
 var LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 // const { CityLite } = require('country-state-city-js')
 //Middleware
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: "50mb" }));
 app.use(
   session({
     secret: "secret",
@@ -87,24 +92,7 @@ passport.use(
     }
   )
 );
-// passport.use(
-//   new LinkedInStrategy(
-//     {
-//       consumerKey: LINKEDIN_CLIENT_ID,
-//       consumerSecret: LINKEDIN_CLIENT_SECRET,
-//       callbackURL: "https://eas-works.herokuapp.com/api/linkedin/callback",
-//     },
-//     function (token, tokenSecret, profile, done) {
-//       process.nextTick(function () {
-//         // To keep the example simple, the user's LinkedIn profile is returned to
-//         // represent the logged-in user.  In a typical application, you would want
-//         // to associate the LinkedIn account with a user record in your database,
-//         // and return that user instead.
-//         return done(null, profile);
-//       });
-//     }
-//   )
-// );
+
 passport.use(
   new GitHubStrategy(
     {
@@ -116,110 +104,87 @@ passport.use(
     function (accessToken, refreshToken, profile, done) {
       return done(null, profile);
     }
-    // function (accessToken, refreshToken, profile, done) {
-    //   process.nextTick(function () {
-    //     done(null, profile);
-    //     // User.findOne({ id: profile.id }, function (err, res) {
-    //     //   if (err) return done(err);
-    //     //   if (res) {
-    //     //     console.log("user exists");
-    //     //     return done(null, res);
-    //     //   } else {
-    //     //     console.log("insert user");
-    //     //     var user = new User({
-    //     //       id: profile.id,
-    //     //       access_token: accessToken,
-    //     //       refresh_token: refreshToken,
-    //     //     });
-    //     //     user.save(function (err) {
-    //     //       if (err) return done(err);
-    //     //       return done(null, user);
-    //     //     });
-    //     //   }
-    //     // });
-    //   });
-    // }
   )
 );
-// const GitHubStrategy = require("passport-github").Strategy;
 
-// passport.use(
-//   new GitHubStrategy(
-//     {
-//       clientID: GITHUB_CLIENT_ID,
-//       clientSecret: GITHUB_CLIENT_SECRET,
-//       authorizationURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/authorize",
-//       tokenURL: "https://ENTERPRISE_INSTANCE_URL/login/oauth/access_token",
-//       userProfileURL: "https://ENTERPRISE_INSTANCE_URL/api/v3/user",
-//       callbackURL: "https://eas-works.herokuapp.com/api/github/callback",
-//     },
-//     function (accessToken, refreshToken, profile, cb) {
-//       User.findOrCreate({ githubId: profile.id }, function (err, user) {
-//         return cb(err, user);
-//       });
-//     }
-//   )
-// );
 app.post("/api/github/getGithubUrl", (req, res, next) => {
-  if (!req.body.login) {
+  if (!req.body.login && !req.body.role) {
     return res.sendStatus(400);
   }
   // passport.authenticate('github', { scope: ['user:email'] })
   passport.authenticate("github", {
     login: req.body.login,
-  })
-    (req, res, next);
+    state: req.body.role,
+  })(req, res, next);
 });
-// app.get("/api/linkedin/getLinkedinUrl", passport.authenticate("linkedin"));
+
 app.get(
-  "/api/linkedin/getLinkedinUrl",
-  passport.authenticate("linkedin"),
+  "/api/github/callback",
+  passport.authenticate("github", { failureRedirect: "/" }),
   function (req, res) {
-    // The request will be redirected to LinkedIn for authentication, so this
-    // function will not be called.
+    let slug;
+    const role = req.query.state;
+    switch (role.toLowerCase()) {
+      case "talent":
+        slug = process.env.OAUTH_TALENT_SLUG;
+        break;
+      case "employer":
+        slug = process.env.OAUTH_EMPLOYER_SLUG;
+        break;
+    }
+    res.redirect(
+      process.env.CLIENT_URL +
+        slug +
+        "/?name=" +
+        req.user.displayName +
+        "&email=" +
+        req.user.emails[0].value
+    );
   }
 );
+
+app.get("/api/linkedin/getLinkedinUrl", (req, res, next) => {
+  if (!req.body.role) {
+    return res.sendStatus(400);
+  }
+  passport.authenticate("linkedin", {
+    scope: ["user:email"],
+    state: req.body.role,
+  })(req, res, next);
+});
 app.get(
   "/api/linkedin/callback",
   passport.authenticate("linkedin", { failureRedirect: "/" }),
   function (req, res) {
+    let slug;
+    const role = req.query.state;
+    switch (role.toLowerCase()) {
+      case "talent":
+        slug = process.env.OAUTH_TALENT_SLUG;
+        break;
+      case "employer":
+        slug = process.env.OAUTH_EMPLOYER_SLUG;
+        break;
+    }
     res.redirect(
-      process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
+      process.env.CLIENT_URL +
+        slug +
+        "/?name=" +
+        req.user.displayName +
+        "&email=" +
+        req.user.emails[0].value
     );
   }
 );
-// app.get('/api/github/callback',passport.authenticate('github',{ scope: [ 'user:email' ] }));
-app.get(
-  "/api/github/callback"
-  , passport.authenticate('github', { failureRedirect: '/' }),
-  function (req, res) {
-    res.redirect(
-      process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
-    );
-  });
-
-// passport.authenticate("github", {
-//   failureRedirect: "/",
-//   scope: ["user"],
-// }),
-// function (req, res) {
-//   // Successful authentication, redirect home.
-//   console.log("req.user", req.user);
-//   res.redirect(
-//     "/?name=" + req.user.displayName + "&email=" + req.user.emails[0].value
-//   );
-// }
-// );
-// const googleMiddleware = (req, res, next) => {
-//   req.session = null;
-//   req.logout();
-//   passport.authenticate("google", { scope: ["email", "profile"] })
-//   next()
-// }
-app.get(
-  "/api/gmail/getGmailUrl", passport.authenticate("google", { scope: ["email", "profile"] })
-);
-//Use the req.isAuthenticated() function to check if user is Authenticated
+app.get("/api/gmail/getGmailUrl", (req, res, next) => {
+  if (!req.body.role) {
+    return res.sendStatus(400);
+  }
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+    state: req.body.role,
+  })(req, res, next);
+});
 checkAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
@@ -237,31 +202,35 @@ app.get(
 passport.serializeUser((user, done) => {
   console.log(`\n--------> Serialize User:`);
   console.log(user);
-  // The USER object is the "authenticated user" from the done() in authUser function.
-  // serializeUser() will attach this user to "req.session.passport.user.{user}", so that it is tied to the session object for each session.
-
   done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
   console.log("\n--------- Deserialized User:");
   console.log(user);
-  // This is the {user} that was saved in req.session.passport.user.{user} in the serializationUser()
-  // deserializeUser will attach this {user} to the "req.user.{user}", so that it can be used anywhere in the App.
-
   done(null, user);
 });
-//Define the Protected Route, by using the "checkAuthenticated" function defined above as middleware
 app.get("/api/gmail/getGmailUser", checkAuthenticated, (req, res) => {
   console.log("req.user", req.user);
-  res.redirect(process.env.CLIENT_URL + process.env.OAUTH_SLUG + "/?name=" + req.user.displayName + "&email=" + req.user.email);
+  let slug;
+  const role = req.query.state;
+  switch (role.toLowerCase()) {
+    case "talent":
+      slug = process.env.OAUTH_TALENT_SLUG;
+      break;
+    case "employer":
+      slug = process.env.OAUTH_EMPLOYER_SLUG;
+      break;
+  }
+  res.redirect(
+    process.env.CLIENT_URL +
+      slug +
+      "/?name=" +
+      req.user.displayName +
+      "&email=" +
+      req.user.email
+  );
 });
-// app.get(
-//   "/api/gmail/getGmailUrl",
-//   passport.authenticate("google", {
-//     scope: ["profile", "email"],
-//   })
-// );
 console.log("rooturl", process.env.SERVER_URL);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -288,7 +257,9 @@ app.use(
 app.use("/uploads", express.static("uploads"));
 app.set("trust proxy", 1);
 const MongoDBConnection = require("./Database/connection");
-const { networkconnectivity } = require("googleapis/build/src/apis/networkconnectivity");
+const {
+  networkconnectivity,
+} = require("googleapis/build/src/apis/networkconnectivity");
 var prefix = "/api/";
 
 //app.use('/api/pricing', require('./controllers/pricing.controller')({ MongoDBConnection }));
@@ -451,57 +422,57 @@ app.use(function (err, req, res, next) {
 var server = http.createServer(app);
 const io = socketio(server);
 // this block will run when the client connects
-io.on('connection', socket => {
-
-  socket.on('getUsers', async ({ userRole, userId }) => {
+io.on("connection", (socket) => {
+  socket.on("getUsers", async ({ userRole, userId }) => {
     let users;
     const user = await getUser(userId);
     switch (userRole) {
       case "freelancer":
 
       case "employer":
-
-        users = await findUsers({ role: "admin", active: 1 })
-        socket.emit('getUsersResponse', {
+        users = await findUsers({ role: "admin", active: 1 });
+        socket.emit("getUsersResponse", {
           data: [{ key: "admin", users }],
-          from: user
-        })
+          from: user,
+        });
         break;
       case "admin":
       default:
-        const freelancers = await findUsers({ role: "freelancer", active: 1 })
-        const employers = await findUsers({ role: "employer", active: 1 })
-        socket.emit('getUsersResponse', {
-          data: [{ key: "freelancer", freelancers }, { key: "employer", employers }],
-          from: user
-        })
+        const freelancers = await findUsers({ role: "freelancer", active: 1 });
+        const employers = await findUsers({ role: "employer", active: 1 });
+        socket.emit("getUsersResponse", {
+          data: [
+            { key: "freelancer", freelancers },
+            { key: "employer", employers },
+          ],
+          from: user,
+        });
         break;
     }
   });
-  socket.on('createRoom', async ({ fromUserId, toUserId, isNew }) => {
-    let create = false
+  socket.on("createRoom", async ({ fromUserId, toUserId, isNew }) => {
+    let create = false;
     let chatRoom;
     if (!isNew) {
       const chatRooms = getChatRooms([fromUserId, toUserId]);
       if (chatRooms && chatRooms.length > 0) {
-        create = false
-        chatRoom = chatRooms[0]
+        create = false;
+        chatRoom = chatRooms[0];
       }
     } else {
-      create = true
+      create = true;
     }
-    if (create)
-      chatRoom = await createChatRooms([fromUserId, toUserId])
+    if (create) chatRoom = await createChatRooms([fromUserId, toUserId]);
     let users;
-    socket.emit('createRoomResponse', {
-      room: chatRoom
-    })
+    socket.emit("createRoomResponse", {
+      room: chatRoom,
+    });
   });
-  socket.on('sendTextMessage', async ({ chatRoomId, userId, message }) => {
+  socket.on("sendTextMessage", async ({ chatRoomId, userId, message }) => {
     await createChatRoomMessages(chatRoomId, userId, message);
-    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+    const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages];
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -511,17 +482,17 @@ io.on('connection', socket => {
       }
       return 0;
     }
-    allMessages.sort(compare)
-    allMessages = allMessages.map(async m => await getUser(m.userId))
-    socket.emit('getRoomMessagesResponse', {
+    allMessages.sort(compare);
+    allMessages = allMessages.map(async (m) => await getUser(m.userId));
+    socket.emit("getRoomMessagesResponse", {
       chatRoomId,
-      messages: allMessages
-    })
+      messages: allMessages,
+    });
   });
-  socket.on('getRoomMessages', async ({ chatRoomId }) => {
-    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+  socket.on("getRoomMessages", async ({ chatRoomId }) => {
+    const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages];
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -531,18 +502,43 @@ io.on('connection', socket => {
       }
       return 0;
     }
-    allMessages.sort(compare)
-    allMessages = allMessages.map(async m => await getUser(m.userId))
-    socket.emit('getRoomMessagesResponse', {
+    allMessages.sort(compare);
+    allMessages = allMessages.map(async (m) => await getUser(m.userId));
+    socket.emit("getRoomMessagesResponse", {
       chatRoomId,
-      messages: allMessages
-    })
+      messages: allMessages,
+    });
   });
-  socket.on('sendFileMessage', async ({ chatRoomId, userId, fileName, fileData }) => {
-    await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
-    const chatRoomMessages = await getChatRoomMessages(chatRoomId)
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages]
+  socket.on(
+    "sendFileMessage",
+    async ({ chatRoomId, userId, fileName, fileData }) => {
+      await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
+      const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+      const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+      let allMessages = [
+        ...chatRoomMessages.messages,
+        ...chatRoomFiles.messages,
+      ];
+      function compare(a, b) {
+        if (a.createdAt < b.createdAt) {
+          return -1;
+        }
+        if (a.createdAt > b.createdAt) {
+          return 1;
+        }
+        return 0;
+      }
+      allMessages.sort(compare);
+      allMessages = allMessages.map(async (m) => await getUser(m.userId));
+      socket.emit("getRoomMessagesResponse", {
+        chatRoomId,
+        messages: allMessages,
+      });
+    }
+  );
+  socket.on("getRoomFileMessages", async ({ chatRoomId }) => {
+    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+    let allMessages = [...chatRoomFiles.messages];
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -552,33 +548,13 @@ io.on('connection', socket => {
       }
       return 0;
     }
-    allMessages.sort(compare)
-    allMessages = allMessages.map(async m => await getUser(m.userId))
-    socket.emit('getRoomMessagesResponse', {
+    allMessages.sort(compare);
+    allMessages = allMessages.map(async (m) => await getUser(m.userId));
+    socket.emit("getRoomFileMessagesResponse", {
       chatRoomId,
-      messages: allMessages
-    })
+      messages: allMessages,
+    });
   });
-  socket.on('getRoomFileMessages', async ({ chatRoomId }) => {
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId)
-    let allMessages = [...chatRoomFiles.messages]
-    function compare(a, b) {
-      if (a.createdAt < b.createdAt) {
-        return -1;
-      }
-      if (a.createdAt > b.createdAt) {
-        return 1;
-      }
-      return 0;
-    }
-    allMessages.sort(compare)
-    allMessages = allMessages.map(async m => await getUser(m.userId))
-    socket.emit('getRoomFileMessagesResponse', {
-      chatRoomId,
-      messages: allMessages
-    })
-  });
-
 });
 
 /**
