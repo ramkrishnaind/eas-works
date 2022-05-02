@@ -7,7 +7,7 @@
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
-    <form action="/api/gmail/getGmailUrl">
+    <form action="/api/gmail/getGmailUrl" method="post">
       <input type="hidden" name="role" value="talent" />
       <button type="submit">Google Authenticate</button>
     </form>
@@ -17,7 +17,7 @@
       <input type="hidden" name="role" value="talent" />
       <button type="submit">Github Authenticate</button>
     </form>
-    <form action="/api/linkedin/getLinkedinUrl">
+    <form action="/api/linkedin/getLinkedinUrl" method="post">
       <input type="hidden" name="role" value="employer" />
       <button type="submit">Linkedin Authenticate</button>
     </form>

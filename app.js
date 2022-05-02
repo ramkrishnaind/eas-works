@@ -143,12 +143,11 @@ app.get(
   }
 );
 
-app.get("/api/linkedin/getLinkedinUrl", (req, res, next) => {
+app.post("/api/linkedin/getLinkedinUrl", (req, res, next) => {
   if (!req.body.role) {
     return res.sendStatus(400);
   }
   passport.authenticate("linkedin", {
-    scope: ["user:email"],
     state: req.body.role,
   })(req, res, next);
 });
@@ -176,7 +175,8 @@ app.get(
     );
   }
 );
-app.get("/api/gmail/getGmailUrl", (req, res, next) => {
+app.post("/api/gmail/getGmailUrl", (req, res, next) => {
+  console.log(req.body);
   if (!req.body.role) {
     return res.sendStatus(400);
   }
@@ -194,9 +194,31 @@ checkAuthenticated = (req, res, next) => {
 app.get(
   "/api/gmail/callback",
   passport.authenticate("google", {
-    successRedirect: `/api/gmail/getGmailUser`,
+    // successRedirect: `/api/gmail/getGmailUser`,
     failureRedirect: "/",
-  })
+  }),
+
+  function (req, res) {
+    let slug;
+    const role = req.query.state;
+    console.log("req.query", req.query);
+    switch (role.toLowerCase()) {
+      case "talent":
+        slug = process.env.OAUTH_TALENT_SLUG;
+        break;
+      case "employer":
+        slug = process.env.OAUTH_EMPLOYER_SLUG;
+        break;
+    }
+    res.redirect(
+      process.env.CLIENT_URL +
+        slug +
+        "/?name=" +
+        req.user.displayName +
+        "&email=" +
+        req.user.emails[0].value
+    );
+  }
 );
 
 passport.serializeUser((user, done) => {
@@ -210,27 +232,27 @@ passport.deserializeUser((user, done) => {
   console.log(user);
   done(null, user);
 });
-app.get("/api/gmail/getGmailUser", checkAuthenticated, (req, res) => {
-  console.log("req.user", req.user);
-  let slug;
-  const role = req.query.state;
-  switch (role.toLowerCase()) {
-    case "talent":
-      slug = process.env.OAUTH_TALENT_SLUG;
-      break;
-    case "employer":
-      slug = process.env.OAUTH_EMPLOYER_SLUG;
-      break;
-  }
-  res.redirect(
-    process.env.CLIENT_URL +
-      slug +
-      "/?name=" +
-      req.user.displayName +
-      "&email=" +
-      req.user.email
-  );
-});
+// app.get("/api/gmail/getGmailUser", checkAuthenticated, (req, res) => {
+//   console.log("req.query", req.query);
+//   let slug;
+//   const role = req.query.state;
+//   switch (role.toLowerCase()) {
+//     case "talent":
+//       slug = process.env.OAUTH_TALENT_SLUG;
+//       break;
+//     case "employer":
+//       slug = process.env.OAUTH_EMPLOYER_SLUG;
+//       break;
+//   }
+//   res.redirect(
+//     process.env.CLIENT_URL +
+//       slug +
+//       "/?name=" +
+//       req.user.displayName +
+//       "&email=" +
+//       req.user.email
+//   );
+// });
 console.log("rooturl", process.env.SERVER_URL);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
