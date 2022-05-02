@@ -448,7 +448,9 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 var server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server, {
+  allowEIO3: true, // false by default
+});
 // this block will run when the client connects
 io.on("connection", (socket) => {
   socket.on("getUsers", async ({ userRole, userId }) => {
@@ -584,7 +586,9 @@ io.on("connection", (socket) => {
     });
   });
 });
-
+io.on("connect_error", (err) => {
+  console.log(`connect_error due to ${err.message}`);
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
