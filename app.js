@@ -142,19 +142,25 @@ app.get(
     );
   }
 );
-
+app.get("/api/logout", (req, res, next) => {
+  req.session = null;
+  req.logout();
+  res.redirect("/");
+});
 app.post("/api/linkedin/getLinkedinUrl", (req, res, next) => {
   if (!req.body.role) {
     return res.sendStatus(400);
   }
   passport.authenticate("linkedin", {
+    scope: ["r_emailaddress", "r_liteprofile"],
     state: req.body.role,
   })(req, res, next);
 });
 app.get(
   "/api/linkedin/callback",
-  passport.authenticate("linkedin", { failureRedirect: "/" }),
+  passport.authenticate("linkedin", { failureRedirect: "/error" }),
   function (req, res) {
+    console.log("hi");
     let slug;
     const role = req.query.state;
     switch (role.toLowerCase()) {
