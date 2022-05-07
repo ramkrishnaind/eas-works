@@ -458,9 +458,10 @@ const io = socketio(server, {
 });
 // this block will run when the client connects
 io.on("connection", (socket) => {
+  console.log("connected socket new!");
   socket.on("getUsers", async ({ userRole, userId }) => {
     let users;
-    const user = await getUser(userId);
+    const user = await getUser({ userId });
     switch (userRole) {
       case "freelancer":
 
@@ -591,9 +592,20 @@ io.on("connection", (socket) => {
     });
   });
 });
-io.on("connect_error", (err) => {
-  console.log(`connect_error due to ${err.message}`);
-});
+// io.on("connection", function (socket) {
+//   console.log("connected socket!");
+
+//   socket.on("greet", function (data) {
+//     console.log("data", data);
+//     socket.emit("respond", { hello: "Hey, Mr.Client!" });
+//   });
+//   socket.on("disconnect", function () {
+//     console.log("Socket disconnected");
+//   });
+// });
+// io.on("connect_error", (err) => {
+//   console.log(`connect_error due to ${err.message}`);
+// });
 /**
  * Listen on provided port, on all network interfaces.
  */

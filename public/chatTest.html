@@ -8,18 +8,32 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io("https://eas-works.herokuapp.com");
+      // var socket = io("ws://localhost:3334", { transports: ["websocket"] });
+      // socket.on("connect", function () {
+      //   console.log("connected!");
+      //   socket.emit("greet", { message: "Hello Mr.Server!" });
+      // });
 
-      var form = document.getElementById("form");
-      var input = document.getElementById("input");
+      // socket.on("respond", function (data) {
+      //   console.log(data);
+      // });
 
-      socket.emit("getUsers", {
-        userRole: "freelancer",
-        userId: "8274982sahjgkjhsha",
+      var socket = io("ws://localhost:3334", {
+        transports: ["websocket"],
       });
-      socket.on("getUsersResponse", ({ data, from }) => {
-        console.log("data", data);
-        console.log("user", user);
+
+      // var form = document.getElementById("form");
+      // var input = document.getElementById("input");
+      socket.on("connect", function () {
+        console.log("connected!");
+        socket.emit("getUsers", {
+          userRole: "freelancer",
+          userId: "8274982sahjgkjhsha",
+        });
+        socket.on("getUsersResponse", ({ data, from }) => {
+          console.log("data", data);
+          console.log("user", from);
+        });
       });
     </script>
   </head>
