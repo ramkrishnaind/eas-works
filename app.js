@@ -8,6 +8,7 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cors = require("cors");
+const app = express();
 app.use(cors({ origin: "*" }));
 const socketio = require("socket.io");
 
@@ -21,7 +22,6 @@ const {
   getChatRoomFiles,
 } = require("./helpers/chatRoomsHelper");
 
-const app = express();
 // const server = http.createServer(app);
 require("dotenv").config();
 const passport = require("passport");
