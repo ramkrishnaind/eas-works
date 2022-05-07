@@ -10,7 +10,12 @@ const usersRouter = require("./routes/users");
 const cors = require("cors");
 const app = express();
 app.use(cors({ origin: "*" }));
-const socketio = require("socket.io");
+const socketio = require("socket.io", {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
 const { getUser, findUsers } = require("./helpers/userHelper");
 const {
