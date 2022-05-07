@@ -7,6 +7,8 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const cors = require("cors");
+app.use(cors({ origin: "*" }));
 const socketio = require("socket.io");
 
 const { getUser, findUsers } = require("./helpers/userHelper");
@@ -19,7 +21,6 @@ const {
   getChatRoomFiles,
 } = require("./helpers/chatRoomsHelper");
 
-const cors = require("cors");
 const app = express();
 // const server = http.createServer(app);
 require("dotenv").config();
@@ -269,7 +270,6 @@ app.use(logger("dev"));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(cors({ origin: "*" }));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
