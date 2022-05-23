@@ -8,7 +8,9 @@
 /admin/package-lock.json
 package-lock.json
 admin/package-lock.json
-uploads/*
+uploads/chats/*
+uploads/emp*
+uploads/emp*/*
 /.pnp
 .pnp.js
 # testing 

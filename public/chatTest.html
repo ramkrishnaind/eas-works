@@ -18,7 +18,7 @@
       //   console.log(data);
       // });
 
-      var socket = io("https://eas-works.herokuapp.com/", {
+      var socket = io("http://localhost:3334/", {
         transports: ["websocket"],
       });
 
@@ -26,16 +26,58 @@
       // var input = document.getElementById("input");
       socket.on("connect", function () {
         console.log("connected!");
-        socket.emit("getUsers", {
-          userRole: "freelancer",
-          userId: "8274982sahjgkjhsha",
-        });
-        socket.on("getUsersResponse", ({ data, from }) => {
-          console.log("data", data);
-          console.log("user", from);
-        });
+        // socket.emit("getUsers", {
+        //   userRole: "freelancer",
+        //   _id: "61b87d3ce1669ae19df20e3b",
+        // });
+        // socket.on("getUsersResponse", ({ data, from }) => {
+        //   console.log("data", data);
+        //   console.log("user", from);
+        // });
+        // socket.emit("createRoom", {
+        //   fromUserId: "61b87d3ce1669ae19df20e3b",
+        //   toUserId: "61b87a2ae1669ae19df20e36",
+        //   isNew: true,
+        // });
+        // socket.on("createRoomResponse", ({ room }) => {
+        //   console.log("room", room);
+        // });
+        // socket.emit("sendTextMessage", {
+        //   chatRoomId: "628a6e71cc4380a16db018a2",
+        //   userId: "61b87a2ae1669ae19df20e36",
+        //   message: "Hi Ram",
+        // });
+        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+        //   console.log("chatRoomId", chatRoomId);
+        //   console.log("messages", messages);
+        // });
+        // document.getElementById("image-file").value;
+        // socket.emit("getRoomMessages", {
+        //   chatRoomId: "628a6e71cc4380a16db018a2",
+        // });
+        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+        //   console.log("chatRoomId", chatRoomId);
+        //   console.log("messages", messages);
+        // });
       });
+      const clickHandler = () => {
+        // socket.on("connect", function () {
+        // socket.emit("sendFileMessage", {
+        //   chatRoomId: "628a6e71cc4380a16db018a2",
+        //   userId: "61b87a2ae1669ae19df20e36",
+        //   fileName: document.getElementById("file").files[0].name,
+        //   fileData: document.getElementById("file").files[0],
+        // });
+        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+        //   console.log("chatRoomId", chatRoomId);
+        //   console.log("messages", messages);
+        // });
+        // });
+      };
     </script>
   </head>
-  <body></body>
+  <body>
+    <input id="file" type="file" />
+    <input type="button" value="submit" onclick="clickHandler()" />
+  </body>
 </html>

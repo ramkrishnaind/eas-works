@@ -1,33 +1,39 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-let schema = new Schema({
+const MessageSchema = new Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  text: String,
+  createdAt: { type: Date, default: new Date() },
+});
+
+let schema = new Schema(
+  {
     chatRoom: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'chatRoom',
-        default: null
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "chatRoom",
+      default: null,
     },
-    messages: [{
-        userId: mongoose.Schema.Types.ObjectId,
-        text: String,
-        createdAt: { type: Date, default: new Date() }
-    }]
-}, {
+    messages: [MessageSchema],
+  },
+  {
     timestamps: {
-        createdAt: 'created',
-        updatedAt: 'updated'
+      createdAt: "created",
+      updatedAt: "updated",
     },
     id: false,
     toJSON: {
-        getters: true,
-        virtuals: true
+      getters: true,
+      virtuals: true,
     },
     toObject: {
-        getters: true,
-        virtuals: true
-    }
-}, {
-    collection: 'chatRoomMessage'
-});
+      getters: true,
+      virtuals: true,
+    },
+  },
+  {
+    collection: "chatRoomMessage",
+  }
+);
 
 module.exports = schema;

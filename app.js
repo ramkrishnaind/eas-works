@@ -293,6 +293,7 @@ const MongoDBConnection = require("./Database/connection");
 const {
   networkconnectivity,
 } = require("googleapis/build/src/apis/networkconnectivity");
+const { json } = require("express");
 var prefix = "/api/";
 
 //app.use('/api/pricing', require('./controllers/pricing.controller')({ MongoDBConnection }));
@@ -459,9 +460,11 @@ const io = socketio(server, {
 // this block will run when the client connects
 io.on("connection", (socket) => {
   console.log("connected socket new!");
-  socket.on("getUsers", async ({ userRole, userId }) => {
+  socket.on("getUsers", async ({ userRole, _id }) => {
+    console.log("userRole", userRole);
+    console.log("_id", _id);
     let users;
-    const user = await getUser({ userId });
+    const user = await getUser({ _id });
     switch (userRole) {
       case "freelancer":
 
@@ -505,10 +508,17 @@ io.on("connection", (socket) => {
     });
   });
   socket.on("sendTextMessage", async ({ chatRoomId, userId, message }) => {
+    console.log("input", { chatRoomId, userId, message });
     await createChatRoomMessages(chatRoomId, userId, message);
     const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+    console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
     const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages];
+    console.log("chatRoomFiles", chatRoomFiles);
+    let allMessages = [
+      ...Array.from(chatRoomMessages?.messages || []),
+      ...(chatRoomFiles?.messages || []),
+    ];
+    console.log("allMessages", allMessages);
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -519,16 +529,41 @@ io.on("connection", (socket) => {
       return 0;
     }
     allMessages.sort(compare);
-    allMessages = allMessages.map(async (m) => await getUser(m.userId));
+    // console.log("allMessages", allMessages);
+    // allMessages = allMessages.map(async (m) => {
+    //   const usr = await getUser({ _id: m.userId });
+    //   console.log("usr", usr);
+    //   return await usr;
+    // });
+    const result = [];
+    for (let m of allMessages) {
+      const keys = Object.keys(m._doc);
+      const onjToPush = {};
+      console.log("keys", keys);
+      keys.forEach((k) => {
+        if (k !== "userId") onjToPush[k] = m[k];
+      });
+      const usr = await getUser(m.userId);
+      onjToPush.user = usr;
+      result.push(onjToPush);
+    }
+    // allMessages = await allMessages;
+    // console.log("allMessages", result);
     socket.emit("getRoomMessagesResponse", {
       chatRoomId,
-      messages: allMessages,
+      messages: result,
     });
   });
   socket.on("getRoomMessages", async ({ chatRoomId }) => {
     const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+    console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
     const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    let allMessages = [...chatRoomMessages.messages, ...chatRoomFiles.messages];
+    console.log("chatRoomFiles", chatRoomFiles);
+    let allMessages = [
+      ...(Array.from(chatRoomMessages?.messages) || []),
+      ...(chatRoomFiles?.messages || []),
+    ];
+    console.log("allMessages", allMessages);
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
@@ -539,10 +574,29 @@ io.on("connection", (socket) => {
       return 0;
     }
     allMessages.sort(compare);
-    allMessages = allMessages.map(async (m) => await getUser(m.userId));
+    // console.log("allMessages", allMessages);
+    // allMessages = allMessages.map(async (m) => {
+    //   const usr = await getUser({ _id: m.userId });
+    //   console.log("usr", usr);
+    //   return await usr;
+    // });
+    const result = [];
+    for (let m of allMessages) {
+      const keys = Object.keys(m._doc);
+      const onjToPush = {};
+      console.log("keys", keys);
+      keys.forEach((k) => {
+        if (k !== "userId") onjToPush[k] = m[k];
+      });
+      const usr = await getUser(m.userId);
+      onjToPush.user = usr;
+      result.push(onjToPush);
+    }
+    // allMessages = await allMessages;
+    // console.log("allMessages", result);
     socket.emit("getRoomMessagesResponse", {
       chatRoomId,
-      messages: allMessages,
+      messages: result,
     });
   });
   socket.on(
@@ -550,11 +604,14 @@ io.on("connection", (socket) => {
     async ({ chatRoomId, userId, fileName, fileData }) => {
       await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
       const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+      console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
       const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+      console.log("chatRoomFiles", chatRoomFiles);
       let allMessages = [
-        ...chatRoomMessages.messages,
-        ...chatRoomFiles.messages,
+        ...Array.from(chatRoomMessages?.messages || []),
+        ...(chatRoomFiles?.messages || []),
       ];
+      console.log("allMessages", allMessages);
       function compare(a, b) {
         if (a.createdAt < b.createdAt) {
           return -1;
@@ -565,16 +622,35 @@ io.on("connection", (socket) => {
         return 0;
       }
       allMessages.sort(compare);
-      allMessages = allMessages.map(async (m) => await getUser(m.userId));
+      // console.log("allMessages", allMessages);
+      // allMessages = allMessages.map(async (m) => {
+      //   const usr = await getUser({ _id: m.userId });
+      //   console.log("usr", usr);
+      //   return await usr;
+      // });
+      const result = [];
+      for (let m of allMessages) {
+        const keys = Object.keys(m._doc);
+        const onjToPush = {};
+        console.log("keys", keys);
+        keys.forEach((k) => {
+          if (k !== "userId") onjToPush[k] = m[k];
+        });
+        const usr = await getUser(m.userId);
+        onjToPush.user = usr;
+        result.push(onjToPush);
+      }
+      // allMessages = await allMessages;
+      // console.log("allMessages", result);
       socket.emit("getRoomMessagesResponse", {
         chatRoomId,
-        messages: allMessages,
+        messages: result,
       });
     }
   );
   socket.on("getRoomFileMessages", async ({ chatRoomId }) => {
     const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    let allMessages = [...chatRoomFiles.messages];
+    let allMessages = [...(chatRoomFiles?.messages || [])];
     function compare(a, b) {
       if (a.createdAt < b.createdAt) {
         return -1;
