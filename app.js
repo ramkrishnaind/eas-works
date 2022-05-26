@@ -158,8 +158,10 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
+    console.log("user", JSON.stringify(req.user));
+    const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
-      user: req.user,
+      user: JSON.stringify({ given_name, family_name, email }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
@@ -200,8 +202,11 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
+    console.log("user", JSON.stringify(req.user));
+
+    const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
-      user: req.user,
+      user: JSON.stringify({ given_name, family_name, email }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
@@ -247,8 +252,10 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
+    console.log("user", JSON.stringify(req.user));
+    const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
-      user: req.user,
+      user: JSON.stringify({ given_name, family_name, email }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
