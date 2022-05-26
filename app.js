@@ -1,4 +1,5 @@
 const express = require("express");
+const MongoDBConnection = require("./Database/connection");
 const http = require("http");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -57,6 +58,17 @@ const GITHUB_CLIENT_SECRET = "686d21e5585c2d50766edecffdaa516276a5f3e8";
 
 const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
 const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
+const checkUserExist = async (email) => {
+  const db = require("./Database/getCollections")(MongoDBConnection);
+  console.log("db", db);
+  return !!(await db.UserDB.findOne({
+    email,
+  }));
+};
+// checkUserExist("ramkrishnaindalkar1@gmail.com").then((exist) => {
+//   console.log("exist", exist);
+// });
+
 // const cities = CityLite("IN", "MH")
 // console.log("cities", cities)
 authUser = (request, accessToken, refreshToken, profile, done) => {
@@ -113,6 +125,7 @@ passport.use(
   )
 );
 
+const querystring = require("querystring");
 app.post("/api/github/getGithubUrl", (req, res, next) => {
   if (!req.body.login && !req.body.role) {
     return res.sendStatus(400);
@@ -127,25 +140,28 @@ app.post("/api/github/getGithubUrl", (req, res, next) => {
 app.get(
   "/api/github/callback",
   passport.authenticate("github", { failureRedirect: "/" }),
-  function (req, res) {
+  async function (req, res) {
     let slug;
-    const role = req.query.state;
-    switch (role.toLowerCase()) {
-      case "talent":
-        slug = process.env.OAUTH_TALENT_SLUG;
-        break;
-      case "employer":
-        slug = process.env.OAUTH_EMPLOYER_SLUG;
-        break;
+    // const role = req.query.state;
+
+    // switch (role.toLowerCase()) {
+    //   case "talent":
+    //     slug = process.env.OAUTH_TALENT_SLUG;
+    //     break;
+    //   case "employer":
+    //     slug = process.env.OAUTH_EMPLOYER_SLUG;
+    //     break;
+    // }
+    const exist = await checkUserExist(req.user.emails[0].value);
+    if (exist) {
+      slug = process.env.SIGN_IN_SLUG;
+    } else {
+      slug = process.env.SIGN_UP_SLUG;
     }
-    res.redirect(
-      process.env.CLIENT_URL +
-        slug +
-        "/?name=" +
-        req.user.displayName +
-        "&email=" +
-        req.user.emails[0].value
-    );
+    const query = new URLSearchParams({
+      user: req.user,
+    }).toString();
+    res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
 );
 app.get("/api/logout", (req, res, next) => {
@@ -165,26 +181,29 @@ app.post("/api/linkedin/getLinkedinUrl", (req, res, next) => {
 app.get(
   "/api/linkedin/callback",
   passport.authenticate("linkedin", { failureRedirect: "/error" }),
-  function (req, res) {
+  async function (req, res) {
     console.log("hi");
     let slug;
-    const role = req.query.state;
-    switch (role.toLowerCase()) {
-      case "talent":
-        slug = process.env.OAUTH_TALENT_SLUG;
-        break;
-      case "employer":
-        slug = process.env.OAUTH_EMPLOYER_SLUG;
-        break;
+    // const role = req.query.state;
+
+    // switch (role.toLowerCase()) {
+    //   case "talent":
+    //     slug = process.env.OAUTH_TALENT_SLUG;
+    //     break;
+    //   case "employer":
+    //     slug = process.env.OAUTH_EMPLOYER_SLUG;
+    //     break;
+    // }
+    const exist = await checkUserExist(req.user.emails[0].value);
+    if (exist) {
+      slug = process.env.SIGN_IN_SLUG;
+    } else {
+      slug = process.env.SIGN_UP_SLUG;
     }
-    res.redirect(
-      process.env.CLIENT_URL +
-        slug +
-        "/?name=" +
-        req.user.displayName +
-        "&email=" +
-        req.user.emails[0].value
-    );
+    const query = new URLSearchParams({
+      user: req.user,
+    }).toString();
+    res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
 );
 app.post("/api/gmail/getGmailUrl", (req, res, next) => {
@@ -210,26 +229,28 @@ app.get(
     failureRedirect: "/",
   }),
 
-  function (req, res) {
+  async function (req, res) {
     let slug;
-    const role = req.query.state;
-    console.log("req.query", req.query);
-    switch (role.toLowerCase()) {
-      case "talent":
-        slug = process.env.OAUTH_TALENT_SLUG;
-        break;
-      case "employer":
-        slug = process.env.OAUTH_EMPLOYER_SLUG;
-        break;
+    // const role = req.query.state;
+
+    // switch (role.toLowerCase()) {
+    //   case "talent":
+    //     slug = process.env.OAUTH_TALENT_SLUG;
+    //     break;
+    //   case "employer":
+    //     slug = process.env.OAUTH_EMPLOYER_SLUG;
+    //     break;
+    // }
+    const exist = await checkUserExist(req.user.emails[0].value);
+    if (exist) {
+      slug = process.env.SIGN_IN_SLUG;
+    } else {
+      slug = process.env.SIGN_UP_SLUG;
     }
-    res.redirect(
-      process.env.CLIENT_URL +
-        slug +
-        "/?name=" +
-        req.user.displayName +
-        "&email=" +
-        req.user.emails[0].value
-    );
+    const query = new URLSearchParams({
+      user: req.user,
+    }).toString();
+    res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
 );
 
@@ -289,7 +310,7 @@ app.use(
 
 app.use("/uploads", express.static("uploads"));
 app.set("trust proxy", 1);
-const MongoDBConnection = require("./Database/connection");
+
 const {
   networkconnectivity,
 } = require("googleapis/build/src/apis/networkconnectivity");
