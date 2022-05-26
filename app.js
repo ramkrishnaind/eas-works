@@ -461,148 +461,74 @@ const io = socketio(server, {
 io.on("connection", (socket) => {
   console.log("connected socket new!");
   socket.on("getUsers", async ({ userRole, _id }) => {
-    console.log("userRole", userRole);
-    console.log("_id", _id);
-    let users;
-    const user = await getUser({ _id });
-    switch (userRole) {
-      case "freelancer":
+    try {
+      console.log("userRole", userRole);
+      console.log("_id", _id);
+      let users;
+      const user = await getUser({ _id });
+      switch (userRole) {
+        case "freelancer":
 
-      case "employer":
-        users = await findUsers({ role: "admin", active: 1 });
-        socket.emit("getUsersResponse", {
-          data: [{ key: "admin", users }],
-          from: user,
-        });
-        break;
-      case "admin":
-      default:
-        const freelancers = await findUsers({ role: "freelancer", active: 1 });
-        const employers = await findUsers({ role: "employer", active: 1 });
-        socket.emit("getUsersResponse", {
-          data: [
-            { key: "freelancer", freelancers },
-            { key: "employer", employers },
-          ],
-          from: user,
-        });
-        break;
+        case "employer":
+          users = await findUsers({ role: "admin", active: 1 });
+          socket.emit("getUsersResponse", {
+            data: [{ key: "admin", users }],
+            from: user,
+          });
+          break;
+        case "admin":
+        default:
+          const freelancers = await findUsers({
+            role: "freelancer",
+            active: 1,
+          });
+          const employers = await findUsers({ role: "employer", active: 1 });
+          socket.emit("getUsersResponse", {
+            data: [
+              { key: "freelancer", freelancers },
+              { key: "employer", employers },
+            ],
+            from: user,
+          });
+          break;
+      }
+    } catch (e) {
+      socket.emit("getUsersResponse", {
+        error: e,
+      });
     }
   });
   socket.on("createRoom", async ({ fromUserId, toUserId, isNew }) => {
-    let create = false;
-    let chatRoom;
-    if (!isNew) {
-      const chatRooms = getChatRooms([fromUserId, toUserId]);
-      if (chatRooms && chatRooms.length > 0) {
-        create = false;
-        chatRoom = chatRooms[0];
+    try {
+      let create = false;
+      let chatRoom;
+      if (!isNew) {
+        const chatRooms = await getChatRooms([fromUserId, toUserId]);
+        console.log("chatRooms", chatRooms);
+        if (chatRooms) {
+          create = false;
+          chatRoom = chatRooms;
+        } else {
+          create = true;
+        }
+      } else {
+        create = true;
       }
-    } else {
-      create = true;
+      if (create) chatRoom = await createChatRooms([fromUserId, toUserId]);
+      let users;
+      socket.emit("createRoomResponse", {
+        room: chatRoom,
+      });
+    } catch (e) {
+      socket.emit("createRoomResponse", {
+        error: e,
+      });
     }
-    if (create) chatRoom = await createChatRooms([fromUserId, toUserId]);
-    let users;
-    socket.emit("createRoomResponse", {
-      room: chatRoom,
-    });
   });
   socket.on("sendTextMessage", async ({ chatRoomId, userId, message }) => {
-    console.log("input", { chatRoomId, userId, message });
-    await createChatRoomMessages(chatRoomId, userId, message);
-    const chatRoomMessages = await getChatRoomMessages(chatRoomId);
-    console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    console.log("chatRoomFiles", chatRoomFiles);
-    let allMessages = [
-      ...Array.from(chatRoomMessages?.messages || []),
-      ...(chatRoomFiles?.messages || []),
-    ];
-    console.log("allMessages", allMessages);
-    function compare(a, b) {
-      if (a.createdAt < b.createdAt) {
-        return -1;
-      }
-      if (a.createdAt > b.createdAt) {
-        return 1;
-      }
-      return 0;
-    }
-    allMessages.sort(compare);
-    // console.log("allMessages", allMessages);
-    // allMessages = allMessages.map(async (m) => {
-    //   const usr = await getUser({ _id: m.userId });
-    //   console.log("usr", usr);
-    //   return await usr;
-    // });
-    const result = [];
-    for (let m of allMessages) {
-      const keys = Object.keys(m._doc);
-      const onjToPush = {};
-      console.log("keys", keys);
-      keys.forEach((k) => {
-        if (k !== "userId") onjToPush[k] = m[k];
-      });
-      const usr = await getUser(m.userId);
-      onjToPush.user = usr;
-      result.push(onjToPush);
-    }
-    // allMessages = await allMessages;
-    // console.log("allMessages", result);
-    socket.emit("getRoomMessagesResponse", {
-      chatRoomId,
-      messages: result,
-    });
-  });
-  socket.on("getRoomMessages", async ({ chatRoomId }) => {
-    const chatRoomMessages = await getChatRoomMessages(chatRoomId);
-    console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    console.log("chatRoomFiles", chatRoomFiles);
-    let allMessages = [
-      ...(Array.from(chatRoomMessages?.messages) || []),
-      ...(chatRoomFiles?.messages || []),
-    ];
-    console.log("allMessages", allMessages);
-    function compare(a, b) {
-      if (a.createdAt < b.createdAt) {
-        return -1;
-      }
-      if (a.createdAt > b.createdAt) {
-        return 1;
-      }
-      return 0;
-    }
-    allMessages.sort(compare);
-    // console.log("allMessages", allMessages);
-    // allMessages = allMessages.map(async (m) => {
-    //   const usr = await getUser({ _id: m.userId });
-    //   console.log("usr", usr);
-    //   return await usr;
-    // });
-    const result = [];
-    for (let m of allMessages) {
-      const keys = Object.keys(m._doc);
-      const onjToPush = {};
-      console.log("keys", keys);
-      keys.forEach((k) => {
-        if (k !== "userId") onjToPush[k] = m[k];
-      });
-      const usr = await getUser(m.userId);
-      onjToPush.user = usr;
-      result.push(onjToPush);
-    }
-    // allMessages = await allMessages;
-    // console.log("allMessages", result);
-    socket.emit("getRoomMessagesResponse", {
-      chatRoomId,
-      messages: result,
-    });
-  });
-  socket.on(
-    "sendFileMessage",
-    async ({ chatRoomId, userId, fileName, fileData }) => {
-      await createChatRoomFileMessages(chatRoomId, userId, fileName, fileData);
+    try {
+      console.log("input", { chatRoomId, userId, message });
+      await createChatRoomMessages(chatRoomId, userId, message);
       const chatRoomMessages = await getChatRoomMessages(chatRoomId);
       console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
       const chatRoomFiles = await getChatRoomFiles(chatRoomId);
@@ -646,26 +572,147 @@ io.on("connection", (socket) => {
         chatRoomId,
         messages: result,
       });
+    } catch (e) {
+      socket.emit("getRoomMessagesResponse", {
+        error: e,
+      });
+    }
+  });
+  socket.on("getRoomMessages", async ({ chatRoomId }) => {
+    try {
+      const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+      console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
+      const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+      console.log("chatRoomFiles", chatRoomFiles);
+      let allMessages = [
+        ...Array.from(chatRoomMessages?.messages || []),
+        ...(chatRoomFiles?.messages || []),
+      ];
+      console.log("allMessages", allMessages);
+      function compare(a, b) {
+        if (a.createdAt < b.createdAt) {
+          return -1;
+        }
+        if (a.createdAt > b.createdAt) {
+          return 1;
+        }
+        return 0;
+      }
+      allMessages.sort(compare);
+      // console.log("allMessages", allMessages);
+      // allMessages = allMessages.map(async (m) => {
+      //   const usr = await getUser({ _id: m.userId });
+      //   console.log("usr", usr);
+      //   return await usr;
+      // });
+      const result = [];
+      for (let m of allMessages) {
+        const keys = Object.keys(m._doc);
+        const onjToPush = {};
+        console.log("keys", keys);
+        keys.forEach((k) => {
+          if (k !== "userId") onjToPush[k] = m[k];
+        });
+        const usr = await getUser(m.userId);
+        onjToPush.user = usr;
+        result.push(onjToPush);
+      }
+      // allMessages = await allMessages;
+      // console.log("allMessages", result);
+      socket.emit("getRoomMessagesResponse", {
+        chatRoomId,
+        messages: result,
+      });
+    } catch (e) {
+      socket.emit("getRoomMessagesResponse", {
+        error: e,
+      });
+    }
+  });
+  socket.on(
+    "sendFileMessage",
+    async ({ chatRoomId, userId, fileName, fileData }) => {
+      try {
+        await createChatRoomFileMessages(
+          chatRoomId,
+          userId,
+          fileName,
+          fileData
+        );
+        const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+        console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
+        const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+        console.log("chatRoomFiles", chatRoomFiles);
+        let allMessages = [
+          ...Array.from(chatRoomMessages?.messages || []),
+          ...(chatRoomFiles?.messages || []),
+        ];
+        console.log("allMessages", allMessages);
+        function compare(a, b) {
+          if (a.createdAt < b.createdAt) {
+            return -1;
+          }
+          if (a.createdAt > b.createdAt) {
+            return 1;
+          }
+          return 0;
+        }
+        allMessages.sort(compare);
+        // console.log("allMessages", allMessages);
+        // allMessages = allMessages.map(async (m) => {
+        //   const usr = await getUser({ _id: m.userId });
+        //   console.log("usr", usr);
+        //   return await usr;
+        // });
+        const result = [];
+        for (let m of allMessages) {
+          const keys = Object.keys(m._doc);
+          const onjToPush = {};
+          console.log("keys", keys);
+          keys.forEach((k) => {
+            if (k !== "userId") onjToPush[k] = m[k];
+          });
+          const usr = await getUser(m.userId);
+          onjToPush.user = usr;
+          result.push(onjToPush);
+        }
+        // allMessages = await allMessages;
+        // console.log("allMessages", result);
+        socket.emit("getRoomMessagesResponse", {
+          chatRoomId,
+          messages: result,
+        });
+      } catch (e) {
+        socket.emit("getRoomMessagesResponse", {
+          error: e,
+        });
+      }
     }
   );
   socket.on("getRoomFileMessages", async ({ chatRoomId }) => {
-    const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-    let allMessages = [...(chatRoomFiles?.messages || [])];
-    function compare(a, b) {
-      if (a.createdAt < b.createdAt) {
-        return -1;
+    try {
+      const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+      let allMessages = [...(chatRoomFiles?.messages || [])];
+      function compare(a, b) {
+        if (a.createdAt < b.createdAt) {
+          return -1;
+        }
+        if (a.createdAt > b.createdAt) {
+          return 1;
+        }
+        return 0;
       }
-      if (a.createdAt > b.createdAt) {
-        return 1;
-      }
-      return 0;
+      allMessages.sort(compare);
+      allMessages = allMessages.map(async (m) => await getUser(m.userId));
+      socket.emit("getRoomFileMessagesResponse", {
+        chatRoomId,
+        messages: allMessages,
+      });
+    } catch (e) {
+      socket.emit("getRoomFileMessagesResponse", {
+        error: e,
+      });
     }
-    allMessages.sort(compare);
-    allMessages = allMessages.map(async (m) => await getUser(m.userId));
-    socket.emit("getRoomFileMessagesResponse", {
-      chatRoomId,
-      messages: allMessages,
-    });
   });
 });
 // io.on("connection", function (socket) {

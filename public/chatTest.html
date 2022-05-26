@@ -42,15 +42,18 @@
         // socket.on("createRoomResponse", ({ room }) => {
         //   console.log("room", room);
         // });
+        socket.emit("getRoomMessages", {
+          chatRoomId: "628f3a603498bcd08c30f57b",
+        });
         // socket.emit("sendTextMessage", {
         //   chatRoomId: "628a6e71cc4380a16db018a2",
         //   userId: "61b87a2ae1669ae19df20e36",
         //   message: "Hi Ram",
         // });
-        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
-        //   console.log("chatRoomId", chatRoomId);
-        //   console.log("messages", messages);
-        // });
+        socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+          console.log("chatRoomId", chatRoomId);
+          console.log("messages", messages);
+        });
         // document.getElementById("image-file").value;
         // socket.emit("getRoomMessages", {
         //   chatRoomId: "628a6e71cc4380a16db018a2",
