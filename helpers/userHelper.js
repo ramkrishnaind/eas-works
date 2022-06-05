@@ -45,6 +45,7 @@ async function findUsers(condition) {
       role,
       lastLoginTime: user.lastLoginTime,
       file: talentProfile?.file || null,
+      _id: user._id,
     });
   });
   return returnUsers;
