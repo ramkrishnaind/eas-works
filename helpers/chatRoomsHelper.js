@@ -8,7 +8,7 @@ const { getUser } = require("./userHelper");
 
 async function getChatRooms(users) {
   return await allCollection.ChatRoomDB.findOne({
-    users: { $in: users.map((u) => mongoose.Types.ObjectId(u)) },
+    users: { $all: users.map((u) => mongoose.Types.ObjectId(u)) },
   });
 }
 async function createChatRooms(users) {

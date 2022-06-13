@@ -26,22 +26,22 @@
       // var input = document.getElementById("input");
       socket.on("connect", function () {
         console.log("connected!");
-        socket.emit("getUsers", {
-          userRole: "admin",
-          _id: "61b87d3ce1669ae19df20e3b",
-        });
-        socket.on("getUsersResponse", ({ data, from }) => {
-          console.log("data", data);
-          console.log("user", from);
-        });
-        // socket.emit("createRoom", {
-        //   fromUserId: "61b87d3ce1669ae19df20e3b",
-        //   toUserId: "61b87a2ae1669ae19df20e36",
-        //   isNew: true,
+        // socket.emit("getUsers", {
+        //   userRole: "admin",
+        //   _id: "61b87d3ce1669ae19df20e3b",
         // });
-        // socket.on("createRoomResponse", ({ room }) => {
-        //   console.log("room", room);
+        // socket.on("getUsersResponse", ({ data, from }) => {
+        //   console.log("data", data);
+        //   console.log("user", from);
         // });
+        socket.emit("createRoom", {
+          fromUserId: "628d164818800576a9bca823",
+          toUserId: "61b87d3ce1669ae19df20e3b",
+          isNew: false,
+        });
+        socket.on("createRoomResponse", ({ room }) => {
+          console.log("room", room);
+        });
         // socket.emit("getRoomMessages", {
         //   chatRoomId: "628f3a603498bcd08c30f57b",
         // });
