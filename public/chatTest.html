@@ -34,20 +34,25 @@
         //   console.log("data", data);
         //   console.log("user", from);
         // });
-        socket.emit("createRoom", {
-          fromUserId: "628d164818800576a9bca823",
-          toUserId: "61b87d3ce1669ae19df20e3b",
-          isNew: false,
-        });
-        socket.on("createRoomResponse", ({ room }) => {
-          console.log("room", room);
-        });
-        // socket.emit("getRoomMessages", {
-        //   chatRoomId: "628f3a603498bcd08c30f57b",
+        // socket.emit("createRoom", {
+        //   fromUserId: "62974671210656c4faac66e6",
+        //   toUserId: "627007a607647311bfc531cd",
+        //   isNew: false,
+        // });
+        // socket.on("createRoomResponse", ({ room }) => {
+        //   console.log("room", room);
         // });
         // socket.emit("sendTextMessage", {
-        //   chatRoomId: "628a6e71cc4380a16db018a2",
-        //   userId: "61b87a2ae1669ae19df20e36",
+        //   chatRoomId: "62a72b13d40aaf02532c813b",
+        //   userId: "627007a607647311bfc531cd",
+        //   message: "This is not as awsome",
+        // });
+        // socket.emit("getRoomMessages", {
+        //   chatRoomId: "628d164818800576a9bca824",
+        // });
+        // socket.emit("sendTextMessage", {
+        //   chatRoomId: "628d164818800576a9bca824",
+        //   userId: "628d164818800576a9bca823",
         //   message: "Hi Ram",
         // });
         // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
@@ -55,13 +60,13 @@
         //   console.log("messages", messages);
         // });
         // document.getElementById("image-file").value;
-        // socket.emit("getRoomMessages", {
-        //   chatRoomId: "628a6e71cc4380a16db018a2",
-        // });
-        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
-        //   console.log("chatRoomId", chatRoomId);
-        //   console.log("messages", messages);
-        // });
+        socket.emit("getRoomMessages", {
+          chatRoomId: "62a72b13d40aaf02532c813b",
+        });
+        socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+          console.log("chatRoomId", chatRoomId);
+          console.log("messages", messages);
+        });
       });
       const clickHandler = () => {
         // socket.on("connect", function () {

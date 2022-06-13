@@ -158,7 +158,7 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    console.log("user", JSON.stringify(req.user));
+    // console.log("user", JSON.stringify(req.user));
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
       user: JSON.stringify({ given_name, family_name, email }),
@@ -202,7 +202,7 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    console.log("user", JSON.stringify(req.user));
+    // console.log("user", JSON.stringify(req.user));
 
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
@@ -252,7 +252,7 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    console.log("user", JSON.stringify(req.user));
+    // console.log("user", JSON.stringify(req.user));
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
       user: JSON.stringify({ given_name, family_name, email }),
@@ -635,6 +635,7 @@ io.on("connection", (socket) => {
       // });
       const result = [];
       for (let m of allMessages) {
+        console.log("userId", m.userid);
         const keys = Object.keys(m._doc);
         const onjToPush = {};
         console.log("keys", keys);

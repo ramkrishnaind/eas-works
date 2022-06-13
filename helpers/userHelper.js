@@ -8,7 +8,7 @@ const users = [];
 
 // Join user to chat
 async function getUser(condition) {
-  return await allCollection.UserDB.findOne(condition);
+  return await allCollection.UserDB.findById(condition);
 }
 async function findUsers(condition) {
   const returnUsers = [];
