@@ -557,51 +557,51 @@ io.on("connection", (socket) => {
     try {
       console.log("input", { chatRoomId, userId, message });
       await createChatRoomMessages(chatRoomId, userId, message);
-      const chatRoomMessages = await getChatRoomMessages(chatRoomId);
-      console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
-      const chatRoomFiles = await getChatRoomFiles(chatRoomId);
-      console.log("chatRoomFiles", chatRoomFiles);
-      let allMessages = [
-        ...Array.from(chatRoomMessages?.messages || []),
-        ...(chatRoomFiles?.messages || []),
-      ];
-      console.log("allMessages", allMessages);
-      function compare(a, b) {
-        if (a.createdAt < b.createdAt) {
-          return -1;
-        }
-        if (a.createdAt > b.createdAt) {
-          return 1;
-        }
-        return 0;
-      }
-      allMessages.sort(compare);
+      // const chatRoomMessages = await getChatRoomMessages(chatRoomId);
+      // console.log("chatRoomMessagesRes", chatRoomMessages?.messages);
+      // const chatRoomFiles = await getChatRoomFiles(chatRoomId);
+      // console.log("chatRoomFiles", chatRoomFiles);
+      // let allMessages = [
+      //   ...Array.from(chatRoomMessages?.messages || []),
+      //   ...(chatRoomFiles?.messages || []),
+      // ];
       // console.log("allMessages", allMessages);
-      // allMessages = allMessages.map(async (m) => {
-      //   const usr = await getUser({ _id: m.userId });
-      //   console.log("usr", usr);
-      //   return await usr;
-      // });
-      const result = [];
-      for (let m of allMessages) {
-        const keys = Object.keys(m._doc);
-        const onjToPush = {};
-        console.log("keys", keys);
-        keys.forEach((k) => {
-          if (k !== "userId") onjToPush[k] = m[k];
-        });
-        const usr = await getUser(m.userId);
-        onjToPush.user = usr;
-        result.push(onjToPush);
-      }
+      // function compare(a, b) {
+      //   if (a.createdAt < b.createdAt) {
+      //     return -1;
+      //   }
+      //   if (a.createdAt > b.createdAt) {
+      //     return 1;
+      //   }
+      //   return 0;
+      // }
+      // allMessages.sort(compare);
+      // // console.log("allMessages", allMessages);
+      // // allMessages = allMessages.map(async (m) => {
+      // //   const usr = await getUser({ _id: m.userId });
+      // //   console.log("usr", usr);
+      // //   return await usr;
+      // // });
+      // const result = [];
+      // for (let m of allMessages) {
+      //   const keys = Object.keys(m._doc);
+      //   const onjToPush = {};
+      //   console.log("keys", keys);
+      //   keys.forEach((k) => {
+      //     if (k !== "userId") onjToPush[k] = m[k];
+      //   });
+      //   const usr = await getUser(m.userId);
+      //   onjToPush.user = usr;
+      //   result.push(onjToPush);
+      // }
       // allMessages = await allMessages;
       // console.log("allMessages", result);
-      socket.emit("getRoomMessagesResponse", {
+      socket.emit("sendTextMessageResponse", {
         chatRoomId,
-        messages: result,
+        message: "Message sent successfully",
       });
     } catch (e) {
-      socket.emit("getRoomMessagesResponse", {
+      socket.emit("sendTextMessageResponse", {
         error: e,
       });
     }

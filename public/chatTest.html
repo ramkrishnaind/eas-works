@@ -45,28 +45,36 @@
         // socket.emit("sendTextMessage", {
         //   chatRoomId: "62a72b13d40aaf02532c813b",
         //   userId: "627007a607647311bfc531cd",
-        //   message: "This is not as awsome",
+        //   message: "Can we connect today?",
         // });
-        // socket.emit("getRoomMessages", {
-        //   chatRoomId: "628d164818800576a9bca824",
-        // });
+        // socket.on(
+        //   "sendTextMessageResponse",
+        //   ({ chatRoomId, message, error }) => {
+        //     console.log("chatRoomId", chatRoomId);
+        //     console.log("messages", message);
+        //     console.log("error", error);
+        //   }
+        // );
+        socket.emit("getRoomMessages", {
+          chatRoomId: "62a72b13d40aaf02532c813b",
+        });
         // socket.emit("sendTextMessage", {
         //   chatRoomId: "628d164818800576a9bca824",
         //   userId: "628d164818800576a9bca823",
         //   message: "Hi Ram",
         // });
-        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
-        //   console.log("chatRoomId", chatRoomId);
-        //   console.log("messages", messages);
-        // });
-        // document.getElementById("image-file").value;
-        socket.emit("getRoomMessages", {
-          chatRoomId: "62a72b13d40aaf02532c813b",
-        });
         socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
           console.log("chatRoomId", chatRoomId);
           console.log("messages", messages);
         });
+        // document.getElementById("image-file").value;
+        // socket.emit("getRoomMessages", {
+        //   chatRoomId: "62a72b13d40aaf02532c813b",
+        // });
+        // socket.on("getRoomMessagesResponse", ({ chatRoomId, messages }) => {
+        //   console.log("chatRoomId", chatRoomId);
+        //   console.log("messages", messages);
+        // });
       });
       const clickHandler = () => {
         // socket.on("connect", function () {
