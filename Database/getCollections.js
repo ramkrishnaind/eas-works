@@ -7,6 +7,7 @@ module.exports = function (mongoose) {
   const QuestionUploadDB = mongoose.model("questionUpload");
   const QuestionDB = mongoose.model("question");
   const UserTestDB = mongoose.model("userTest");
+  const DiscDB = mongoose.model("disc");
   const TestAnswerDB = mongoose.model("testAnswer");
   const TalentProfileUploadDB = mongoose.model("talentProfileUpload");
   const TalentProfileVideoUploadDB = mongoose.model("talentProfileVideoUpload");
@@ -14,11 +15,15 @@ module.exports = function (mongoose) {
   const ChatRoomMessageDB = mongoose.model("chatRoomMessage");
   const ChatRoomFileDB = mongoose.model("chatRoomFile");
   const TalentProfileDB = mongoose.model("talentProfile");
-  const TalentProfileResumeUploadDB = mongoose.model("talentProfileResumeUpload");
+  const TalentProfileResumeUploadDB = mongoose.model(
+    "talentProfileResumeUpload"
+  );
   const TalentProfilePhotoUploadDB = mongoose.model("talentProfilePhotoUpload");
-  const EmployerProfileUploadDB = mongoose.model("employerProfileUploads")
-  const EmployerProfileDB = mongoose.model("employerProfile")
-  const EmployerProfilePhotoUploadDB = mongoose.model("employerProfilePhotoUpload");
+  const EmployerProfileUploadDB = mongoose.model("employerProfileUploads");
+  const EmployerProfileDB = mongoose.model("employerProfile");
+  const EmployerProfilePhotoUploadDB = mongoose.model(
+    "employerProfilePhotoUpload"
+  );
   // const ReqCallbackDB = mongoose.model('reqCallback');
   // const EnquiryDB = mongoose.model('enquiry');
   // const ReviewDB = mongoose.model('review');
@@ -73,7 +78,8 @@ module.exports = function (mongoose) {
     EmployerProfilePhotoUploadDB,
     ChatRoomDB,
     ChatRoomMessageDB,
-    ChatRoomFileDB
+    ChatRoomFileDB,
+    DiscDB,
     // ReqCallbackDB,
     // EnquiryDB,
     // ReviewDB,

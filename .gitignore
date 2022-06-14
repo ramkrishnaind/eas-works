@@ -11,6 +11,7 @@ admin/package-lock.json
 uploads/chats/*
 uploads/emp*
 uploads/emp*/*
+uploads/disc.json
 /.pnp
 .pnp.js
 # testing 

@@ -330,6 +330,10 @@ app.use(
   `${prefix}users`,
   require("./controllers/UsersController")({ MongoDBConnection })
 );
+app.use(
+  `${prefix}disc`,
+  require("./controllers/DiscController")({ MongoDBConnection })
+);
 // app.use(
 //   `${prefix}menuModule`,
 //   require("./Controllers/MenuModuleController")({ MongoDBConnection })
