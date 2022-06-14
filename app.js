@@ -148,6 +148,7 @@ app.get(
   passport.authenticate("github", { failureRedirect: "/" }),
   async function (req, res) {
     let slug;
+    console.log("user-1", req);
     // const role = req.query.state;
 
     // switch (role.toLowerCase()) {
@@ -164,10 +165,10 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    // console.log("user", JSON.stringify(req.user));
-    const { given_name, family_name, email } = req.user;
+    console.log("user", JSON.stringify(req.user));
+    const { displayName, username, emails } = req.user;
     const query = new URLSearchParams({
-      user: JSON.stringify({ given_name, family_name, email }),
+      user: JSON.stringify({ displayName, username, email: emails[0] }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
@@ -203,7 +204,7 @@ app.get(
   midd,
   // passport.authenticate("linkedin", { failureRedirect: "/linkedin/error" }),
   async function (req, res) {
-    console.log("req.user", req.user);
+    // console.log("req.user", req.user);
     let slug;
     // const role = req.query.state;
 
