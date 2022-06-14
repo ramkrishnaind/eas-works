@@ -30,6 +30,10 @@ const {
 
 // const server = http.createServer(app);
 require("dotenv").config();
+app.all("/*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 const passport = require("passport");
 app.use(express.urlencoded({ extended: false }));
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
@@ -56,8 +60,10 @@ const GOOGLE_CLIENT_SECRET = "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";
 const GITHUB_CLIENT_ID = "7987dcae3dde97f43cb7";
 const GITHUB_CLIENT_SECRET = "686d21e5585c2d50766edecffdaa516276a5f3e8";
 
-const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
-const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
+// const LINKEDIN_CLIENT_ID = "77xgttza91klbj";
+const LINKEDIN_CLIENT_ID = "7715jp367v81gb";
+// const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
+const LINKEDIN_CLIENT_SECRET = "vEwsEf4x0zmNO2Ax";
 const checkUserExist = async (email) => {
   const db = require("./Database/getCollections")(MongoDBConnection);
   console.log("db", db);
@@ -127,9 +133,9 @@ passport.use(
 
 const querystring = require("querystring");
 app.post("/api/github/getGithubUrl", (req, res, next) => {
-  if (!req.body.login && !req.body.role) {
-    return res.sendStatus(400);
-  }
+  // if (!req.body.login && !req.body.role) {
+  //   return res.sendStatus(400);
+  // }
   // passport.authenticate('github', { scope: ['user:email'] })
   passport.authenticate("github", {
     login: req.body.login,
@@ -180,11 +186,24 @@ app.post("/api/linkedin/getLinkedinUrl", (req, res, next) => {
     state: req.body.role,
   })(req, res, next);
 });
+const midd = (req, res, next) => {
+  console.log("req-intercepted", req);
+  // if (!req.body.role) {
+  //   return res.sendStatus(400);
+  // }
+  passport.authenticate("linkedin", { failureRedirect: "/linkedin/error" })(
+    req,
+    res,
+    next
+  );
+  next();
+};
 app.get(
   "/api/linkedin/callback",
-  passport.authenticate("linkedin", { failureRedirect: "/error" }),
+  midd,
+  // passport.authenticate("linkedin", { failureRedirect: "/linkedin/error" }),
   async function (req, res) {
-    console.log("hi");
+    console.log("req.user", req.user);
     let slug;
     // const role = req.query.state;
 
