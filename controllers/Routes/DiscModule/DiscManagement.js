@@ -4,32 +4,57 @@ var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const errorResponseHelper = require("../../../Helper/errorResponse");
 const getTotals = (data) => {
-  let ones = 0,
-    twos = 0,
-    threes = 0,
-    fours = 0,
-    others = 0;
+  let onesMost = 0,
+    onesLeast = 0,
+    twosMost = 0,
+    twosLeast = 0,
+    threesMost = 0,
+    threesLeast = 0,
+    foursMost = 0,
+    foursLeast = 0,
+    othersMost = 0,
+    othersLeast = 0;
   data.forEach((element) => {
-    switch (+element) {
+    switch (+element.most) {
       case 1:
-        ones++;
+        onesMost++;
         break;
       case 2:
-        twos++;
+        twosMost++;
         break;
       case 3:
-        threes++;
+        threesMost++;
         break;
       case 4:
-        fours++;
+        foursMost++;
         break;
       default:
-        other++;
+        othersMost++;
+        break;
+    }
+    switch (+element.least) {
+      case 1:
+        onesLeast++;
+        break;
+      case 2:
+        twosLeast++;
+        break;
+      case 3:
+        threesLeast++;
+        break;
+      case 4:
+        foursLeast++;
+        break;
+      default:
+        othersLeast++;
         break;
     }
     // counter++;
   });
-  return [ones, twos, threes, fours, others];
+  return {
+    most: [onesMost, twosMost, threesMost, foursMost, othersMost],
+    least: [onesLeast, twosLeast, threesLeast, foursLeast, othersLeast],
+  };
 };
 function sendDiscHelper(Models) {
   async function sendDisc(req, res) {

@@ -10,16 +10,37 @@ let schema = new Schema(
     },
     data: [
       {
-        type: Number,
-        required: true,
+        question: {
+          type: Number,
+          required: true,
+          trim: true,
+        },
+        most: {
+          type: Number,
+          required: true,
+          trim: true,
+        },
+        least: {
+          type: Number,
+          required: true,
+          trim: true,
+        },
       },
     ],
-    totals: [
-      {
-        type: Number,
-        required: true,
-      },
-    ],
+    totals: {
+      most: [
+        {
+          type: Number,
+          required: true,
+        },
+      ],
+      least: [
+        {
+          type: Number,
+          required: true,
+        },
+      ],
+    },
   },
   {
     timestamps: {
