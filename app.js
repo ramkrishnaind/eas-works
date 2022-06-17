@@ -159,6 +159,7 @@ app.get(
     //     slug = process.env.OAUTH_EMPLOYER_SLUG;
     //     break;
     // }
+    const { displayName, username, emails, email } = req.user;
     const exist = await checkUserExist(
       email || (emails && emails.length > 0 && emails[0])
     );
@@ -168,7 +169,7 @@ app.get(
       slug = process.env.SIGN_UP_SLUG;
     }
     console.log("user", JSON.stringify(req.user));
-    const { displayName, username, emails, email } = req.user;
+
     const query = new URLSearchParams({
       user: JSON.stringify({
         displayName,
