@@ -166,9 +166,13 @@ app.get(
       slug = process.env.SIGN_UP_SLUG;
     }
     console.log("user", JSON.stringify(req.user));
-    const { displayName, username, emails } = req.user;
+    const { displayName, username, emails, email } = req.user;
     const query = new URLSearchParams({
-      user: JSON.stringify({ displayName, username, email: emails[0] }),
+      user: JSON.stringify({
+        displayName,
+        username,
+        email: email || (emails && emails.length > 0 && emails[0]),
+      }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
@@ -179,9 +183,9 @@ app.get("/api/logout", (req, res, next) => {
   res.redirect("/");
 });
 app.post("/api/linkedin/getLinkedinUrl", (req, res, next) => {
-  if (!req.body.role) {
-    return res.sendStatus(400);
-  }
+  // if (!req.body.role) {
+  //   return res.sendStatus(400);
+  // }
   passport.authenticate("linkedin", {
     scope: ["r_emailaddress", "r_liteprofile"],
     state: req.body.role,
@@ -233,9 +237,9 @@ app.get(
 );
 app.post("/api/gmail/getGmailUrl", (req, res, next) => {
   console.log(req.body);
-  if (!req.body.role) {
-    return res.sendStatus(400);
-  }
+  // if (!req.body.role) {
+  //   return res.sendStatus(400);
+  // }
   passport.authenticate("google", {
     scope: ["email", "profile"],
     state: req.body.role,
