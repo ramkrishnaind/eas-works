@@ -159,7 +159,9 @@ app.get(
     //     slug = process.env.OAUTH_EMPLOYER_SLUG;
     //     break;
     // }
-    const exist = await checkUserExist(req.user.emails[0].value);
+    const exist = await checkUserExist(
+      email || (emails && emails.length > 0 && emails[0])
+    );
     if (exist) {
       slug = process.env.SIGN_IN_SLUG;
     } else {
