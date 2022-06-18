@@ -172,8 +172,8 @@ app.get(
 
     const query = new URLSearchParams({
       user: JSON.stringify({
-        displayName,
-        username,
+        firstName: displayName.split(" ")[0],
+        lastName: displayName.split(" ")[1],
         email: email || (emails && emails.length > 0 && emails[0]),
       }),
     }).toString();
@@ -233,7 +233,11 @@ app.get(
 
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
-      user: JSON.stringify({ given_name, family_name, email }),
+      user: JSON.stringify({
+        firstName: given_name,
+        lastName: family_name,
+        email,
+      }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
@@ -282,7 +286,11 @@ app.get(
     // console.log("user", JSON.stringify(req.user));
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
-      user: JSON.stringify({ given_name, family_name, email }),
+      user: JSON.stringify({
+        firstName: given_name,
+        lastName: family_name,
+        email,
+      }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
