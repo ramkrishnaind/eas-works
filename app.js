@@ -164,7 +164,7 @@ app.get(
 
     displayName = req?.user?.displayName;
     emails = req?.user?.emails;
-    email = req?.user?.email;
+    // email = req?.user?.email;
 
     const exist = await checkUserExist(
       email || (emails && emails.length > 0 && emails[0])
