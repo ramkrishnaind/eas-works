@@ -159,7 +159,13 @@ app.get(
     //     slug = process.env.OAUTH_EMPLOYER_SLUG;
     //     break;
     // }
-    const { displayName, username, emails, email } = req.user;
+    // const { displayName, username, emails, email } = req.user;
+    let displayName, emails, email;
+
+    displayName = req?.user?.displayName;
+    emails = req?.user?.emails;
+    email = req?.user?.email;
+
     const exist = await checkUserExist(
       email || (emails && emails.length > 0 && emails[0])
     );
