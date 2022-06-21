@@ -167,7 +167,7 @@ app.get(
     // email = req?.user?.email;
 
     const exist = await checkUserExist(
-      email || (emails && emails.length > 0 && emails[0])
+      email || (emails && emails.length > 0 && emails[0].value)
     );
     if (exist) {
       slug = process.env.SIGN_IN_SLUG;
@@ -180,7 +180,7 @@ app.get(
       user: JSON.stringify({
         firstName: displayName.split(" ")[0],
         lastName: displayName.split(" ")[1],
-        email: email || (emails && emails.length > 0 && emails[0]),
+        email: email || (emails && emails.length > 0 && emails[0].value),
       }),
     }).toString();
     res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
