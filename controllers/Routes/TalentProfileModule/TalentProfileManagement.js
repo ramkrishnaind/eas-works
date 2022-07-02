@@ -1,8 +1,8 @@
 const _ = require("lodash");
 
 const Joi = require("joi");
-var fs = require('fs');
-var path = require('path');
+var fs = require("fs");
+var path = require("path");
 // In newer Node.js versions where process is already global this isn't necessary.
 var process = require("process");
 var mongoose = require("mongoose");
@@ -41,7 +41,9 @@ function talentProfileVideoUploadHelper(Models) {
     try {
       // console.log("talentProfileData", talentProfileData);
       let talentProfileData = _.pick(req.body, ["userId"]);
-      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.userId = mongoose.Types.ObjectId(
+        talentProfileData.userId
+      );
       talentProfileData.file = req.file;
       let talentProfileUpload = await new Models.TalentProfileVideoUploadDB(
         talentProfileData
@@ -70,7 +72,9 @@ function talentProfileResumeUploadHelper(Models) {
     try {
       // console.log("talentProfileData", talentProfileData);
       let talentProfileData = _.pick(req.body, ["userId"]);
-      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.userId = mongoose.Types.ObjectId(
+        talentProfileData.userId
+      );
       talentProfileData.file = req.file;
       let talentProfileUpload = await new Models.TalentProfileResumeUploadDB(
         talentProfileData
@@ -98,7 +102,9 @@ function talentProfilePhotoUploadHelper(Models) {
     try {
       // console.log("talentProfileData", talentProfileData);
       let talentProfileData = _.pick(req.body, ["userId"]);
-      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.userId = mongoose.Types.ObjectId(
+        talentProfileData.userId
+      );
       talentProfileData.file = req.file;
       let talentProfileUpload = await new Models.TalentProfilePhotoUploadDB(
         talentProfileData
@@ -127,7 +133,9 @@ function talentProfileVideoUploadHelper(Models) {
     try {
       // console.log("talentProfileData", talentProfileData);
       let talentProfileData = _.pick(req.body, ["userId"]);
-      talentProfileData.userId = mongoose.Types.ObjectId(talentProfileData.userId)
+      talentProfileData.userId = mongoose.Types.ObjectId(
+        talentProfileData.userId
+      );
       talentProfileData.file = req.file;
       let talentProfileUpload = await new Models.TalentProfileVideoUploadDB(
         talentProfileData
@@ -160,29 +168,39 @@ function getLatestTalentProfileHelper(Models) {
       ).exec();
       talentProfile = talentProfile.toObject();
       talentProfile = talentProfile.steps;
-      console.log("talentProfile", JSON.stringify(talentProfile))
-      const files = fs.readdirSync(path.join(
-        process.cwd(),
-        "public",
-        "images"));
+      console.log("talentProfile", JSON.stringify(talentProfile));
+      const files = fs.readdirSync(
+        path.join(process.cwd(), "public", "images")
+      );
 
       files.forEach(function (file, index) {
-        const fileWithoutExtension = file.replace(/\.[^/.]+$/, "").toLowerCase();
+        const fileWithoutExtension = file
+          .replace(/\.[^/.]+$/, "")
+          .toLowerCase();
         const primarySkills = Object.keys(talentProfile);
-        console.log("primarySkills", primarySkills)
+        console.log("primarySkills", primarySkills);
         primarySkills.forEach((primSkill) => {
-          const modules = Object.keys(talentProfile[primSkill].Modules)
+          const modules = Object.keys(talentProfile[primSkill].Modules);
           // console.log("modules", modules)
           modules.forEach((module) => {
             const products = talentProfile[primSkill].Modules[module].Product;
             // console.log("products", products)
-            if (products.some(pr => pr.name.toLowerCase().includes(fileWithoutExtension))) {
-              const foundIndex = talentProfile[primSkill].Modules[module].Product.findIndex(pr => pr.name.toLowerCase().includes(fileWithoutExtension))
-              talentProfile[primSkill].Modules[module].Product[foundIndex].imageUrl = '/images/' + file
+            if (
+              products.some((pr) =>
+                pr?.name?.toLowerCase().includes(fileWithoutExtension)
+              )
+            ) {
+              const foundIndex = talentProfile[primSkill].Modules[
+                module
+              ].Product.findIndex((pr) =>
+                pr.name.toLowerCase().includes(fileWithoutExtension)
+              );
+              talentProfile[primSkill].Modules[module].Product[
+                foundIndex
+              ].imageUrl = "/images/" + file;
             }
           });
         });
-
       });
 
       res.send({
@@ -240,7 +258,7 @@ function getTalentProfileVideoHelper(Models) {
     try {
       let talentProfile = await Models.TalentProfileVideoUploadDB.findOne(
         { userId: mongoose.Types.ObjectId(data.userId) },
-        { 'file': 1, "userId": 1 },
+        { file: 1, userId: 1 },
         { sort: { createdAt: -1 } }
       ).exec();
       talentProfile = talentProfile.toObject();
@@ -269,7 +287,7 @@ function getTalentProfileResumeHelper(Models) {
     try {
       let talentProfile = await Models.TalentProfileResumeUploadDB.findOne(
         { userId: mongoose.Types.ObjectId(data.userId) },
-        { 'file': 1, "userId": 1 },
+        { file: 1, userId: 1 },
         { sort: { createdAt: -1 } }
       ).exec();
       talentProfile = talentProfile.toObject();
@@ -298,7 +316,7 @@ function getTalentProfilePhotoHelper(Models) {
     try {
       let talentProfile = await Models.TalentProfilePhotoUploadDB.findOne(
         { userId: mongoose.Types.ObjectId(data.userId) },
-        { 'file': 1, "userId": 1 },
+        { file: 1, userId: 1 },
         { sort: { createdAt: -1 } }
       ).exec();
       talentProfile = talentProfile.toObject();
@@ -447,5 +465,5 @@ module.exports = {
   createTalentProfile: createTalentProfileHelper,
   updateTalentProfile: updateTalentProfileHelper,
   updateTalentProfileFeedback: updateTalentProfileFeedbackHelper,
-  updateTalentProfileEditSteps: updateTalentProfileEditStepsHelper
+  updateTalentProfileEditSteps: updateTalentProfileEditStepsHelper,
 };
