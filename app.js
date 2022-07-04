@@ -55,8 +55,8 @@ app.use(passport.session()); //allow passport to use "express-session"
 
 //Get the GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET from Google Developer Console
 const GOOGLE_CLIENT_ID =
-  "243499270913-1q6i3qjn2q7n9a7fb0383alg2fetd7it.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET = "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";
+  "375730135906-ue24tu42t280a93645tb9r68sfe03jme.apps.googleusercontent.com";
+const GOOGLE_CLIENT_SECRET = "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";
 const GITHUB_CLIENT_ID = "7987dcae3dde97f43cb7";
 const GITHUB_CLIENT_SECRET = "686d21e5585c2d50766edecffdaa516276a5f3e8";
 
@@ -65,11 +65,16 @@ const LINKEDIN_CLIENT_ID = "7715jp367v81gb";
 // const LINKEDIN_CLIENT_SECRET = "vpUD0fNqWFVYV77U";
 const LINKEDIN_CLIENT_SECRET = "vEwsEf4x0zmNO2Ax";
 const checkUserExist = async (email) => {
-  const db = require("./Database/getCollections")(MongoDBConnection);
-  console.log("db", db);
-  return !!(await db.UserDB.findOne({
-    email,
-  }));
+  const promise = new Promise(async (resolve, reject) => {
+    const db = require("./Database/getCollections")(MongoDBConnection);
+
+    const user = await db.UserDB.findOne({
+      email,
+    });
+    console.log("userDB", user);
+    resolve(!!user?.firstName);
+  });
+  return promise;
 };
 // checkUserExist("ramkrishnaindalkar1@gmail.com").then((exist) => {
 //   console.log("exist", exist);
@@ -90,7 +95,7 @@ passport.use(
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.SERVER_URL + "/api/gmail/callback",
-      passReqToCallback: true,
+      // passReqToCallback: true,
     },
     authUser
   )
@@ -122,7 +127,8 @@ passport.use(
     {
       clientID: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: process.env.SERVER_URL + "/api/github/callback",
+      callbackURL: "/api/github/callback",
+      passReqToCallback: true,
     },
 
     function (accessToken, refreshToken, profile, done) {
@@ -169,12 +175,14 @@ app.get(
     const exist = await checkUserExist(
       email || (emails && emails.length > 0 && emails[0].value)
     );
+    console.log("exist", exist);
     if (exist) {
       slug = process.env.SIGN_IN_SLUG;
+      console.log("user", JSON.stringify(req.user));
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    console.log("user", JSON.stringify(req.user));
+    console.log("slug", slug);
 
     const query = new URLSearchParams({
       user: JSON.stringify({
@@ -245,7 +253,7 @@ app.get(
         email,
       }),
     }).toString();
-    res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
+    // res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
   }
 );
 app.post("/api/gmail/getGmailUrl", (req, res, next) => {
@@ -255,7 +263,7 @@ app.post("/api/gmail/getGmailUrl", (req, res, next) => {
   // }
   passport.authenticate("google", {
     scope: ["email", "profile"],
-    state: req.body.role,
+    // state: req.body.role,
   })(req, res, next);
 });
 checkAuthenticated = (req, res, next) => {
@@ -289,7 +297,7 @@ app.get(
     } else {
       slug = process.env.SIGN_UP_SLUG;
     }
-    // console.log("user", JSON.stringify(req.user));
+    console.log("user", JSON.stringify(req.user));
     const { given_name, family_name, email } = req.user;
     const query = new URLSearchParams({
       user: JSON.stringify({
@@ -298,7 +306,18 @@ app.get(
         email,
       }),
     }).toString();
-    res.redirect(process.env.CLIENT_URL + slug + "/?" + query);
+    // console.log(
+    //   "query",
+    //   slug
+    //     ? process.env.CLIENT_URL + "/" + slug + "?" + query
+    //     : process.env.CLIENT_URL + "/?" + query
+    // );
+    res.redirect(
+      slug
+        ? process.env.CLIENT_URL + "/" + slug + "?" + query
+        : process.env.CLIENT_URL + "/?" + query
+    );
+    return;
   }
 );
 
