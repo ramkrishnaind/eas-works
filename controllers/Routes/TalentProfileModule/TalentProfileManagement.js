@@ -109,7 +109,7 @@ function talentProfilePhotoUploadHelper(Models) {
       let talentProfileUpload = await new Models.TalentProfilePhotoUploadDB(
         talentProfileData
       ).save();
-      talentProfileUpload = talentProfileUpload.toObject();
+      // talentProfileUpload = talentProfileUpload.toObject();
 
       res.send({
         status: true,
