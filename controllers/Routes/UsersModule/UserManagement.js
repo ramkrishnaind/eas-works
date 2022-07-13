@@ -2,6 +2,7 @@ const _ = require("lodash");
 const Joi = require("joi");
 const path = require("path");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const createTokenFunction = require("../../../Helper/createUniqueToken");
 const prepareTemplateAndMailHelper = require("../../../Helper/prepareTemplateAndMail");
@@ -237,16 +238,20 @@ function createAdminPanelUserHelper(Models) {
       let saveUser = await new Models.UserDB(userData).save();
       saveUser = saveUser.toObject();
       // saveUser.passwordText = passwordText;
-      // now send mail
-      let tokenObj = {
-        email: userData.email,
-        userId: userData._id,
-        // accountno: userData.accountno,
-        token,
-        created_at: new Date(),
-      };
+      // let token = jwt.sign(
+      //   { date: new Date(), email: userData.email },
+      //   "esa_works"
+      // );
+      // // now send mail
+      // let tokenObj = {
+      //   email: userData.email,
+      //   userId: userData._id,
+      //   // accountno: userData.accountno,
+      //   token,
+      //   created_at: new Date(),
+      // };
 
-      let saveToken = await new Models.AuthTokenDB(tokenObj).save();
+      // let saveToken = await new Models.AuthTokenDB(tokenObj).save();
       res.send({
         status: true,
         message: "User Created Successfully",
