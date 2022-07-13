@@ -88,11 +88,13 @@ function logInHelper(Models) {
         "esa_works"
       );
       console.log("userData is", userData);
+
       let tokenObj = {
         email: userData.email,
         userId: userData._id,
         // accountno: userData.accountno,
         token,
+        roleName,
         created_at: new Date(),
       };
 
