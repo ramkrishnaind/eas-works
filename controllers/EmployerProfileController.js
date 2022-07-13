@@ -36,12 +36,12 @@ const employerProfileFile = require("./Routes/EmployerProfileModule/EmployerProf
 module.exports = function (conn) {
   // console.log(conn)
   const db = require("../Database/getCollections")(conn.MongoDBConnection);
-  // const userAuthMiddleware = userAuthMiddlewareFunction.userAuthMiddleware(db);
-
-
+  const userAuthMiddleware = userAuthMiddlewareFunction.userAuthMiddleware(db);
 
   router.post(
-    "/setEmployerProfileSteps", upload.single("employerProfileFile"),
+    "/setEmployerProfileSteps",
+    userAuthMiddleware,
+    upload.single("employerProfileFile"),
     employerProfileFile.employerProfileUploadHelper(db)
   );
   router.get(

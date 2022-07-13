@@ -39,6 +39,7 @@ module.exports = function (conn) {
   const userAuthMiddleware = userAuthMiddlewareFunction.userAuthMiddleware(db);
   router.post(
     "/setTalentProfileSteps",
+    userAuthMiddleware,
     upload.single("talentProfileFile"),
     talentProfileFile.talentProfileUploadHelper(db)
   );
