@@ -17,6 +17,15 @@ const createUserSchema = Joi.object({
   // countryCode: Joi.number(),
   userRole: Joi.string().required(),
 });
+const createAdminUserSchema = Joi.object({
+  firstName: Joi.string().trim().required(),
+  lastName: Joi.string().trim(),
+  company: Joi.string().trim(),
+  email: Joi.string().email().trim().required(),
+  // mobile: Joi.number().required(),
+  password: Joi.string().trim(),
+  userRole: Joi.string().required(),
+});
 const updateUserSchema = Joi.object({
   id: Joi.string().required(),
   firstName: Joi.string().trim().required(),
@@ -167,7 +176,7 @@ function createAdminPanelUserHelper(Models) {
     try {
       // console.log(req.sessionID)
       // validate data using joi
-      let validateData = createUserSchema.validate(req.body);
+      let validateData = createAdminUserSchema.validate(req.body);
       if (validateData.error) {
         throw { status: false, error: validateData, message: "Invalid data" };
       }
