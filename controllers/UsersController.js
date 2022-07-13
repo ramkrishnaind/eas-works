@@ -66,7 +66,14 @@ module.exports = function (conn) {
     upload.array("image"),
     userFunction.createUserFunc(db)
   );
+  router.post("/checkToken", userFunction.checkTokenValid(db));
   //createNormalUserAdminPanelHelper
+  router.post(
+    "/createAdminPanelUser",
+    userAuthMiddleware,
+    // upload.array("image"),
+    userFunction.createAdminPanelUserHelper(db)
+  );
   router.post(
     "/createAdminPanelUser",
     userAuthMiddleware,

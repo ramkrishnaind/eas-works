@@ -623,6 +623,64 @@ function updateUserFunc(Models) {
   }
   return updateUser;
 }
+function checkTokenValid(Models) {
+  async function checkTokenvalidity(req, res, next) {
+    try {
+      let authToken = req.headers.authorization;
+
+      let tokenArr = authToken.split(" ");
+      let token = tokenArr[1];
+
+      if (!token) {
+        throw {
+          status: false,
+          error: true,
+          auth: false,
+          message: "Token is required",
+        };
+      }
+      let userToken = await Models.AuthTokenDB.findOne({ token })
+        .populate("userId")
+        .lean();
+      if (!userToken) {
+        throw {
+          status: false,
+          error: true,
+          auth: false,
+          message: "Invalid token",
+        };
+      }
+
+      if (
+        userToken.created_at &&
+        new Date(userToken.created_at) < new Date(moment.utc().startOf("day"))
+      ) {
+        // token is old delete it
+        let deleteToken = await Models.AuthTokenDB.deleteOne({ token });
+        throw {
+          status: false,
+          error: true,
+          auth: false,
+          message: "Token exipred",
+          exipred: true,
+        };
+      }
+
+      req.locals = {
+        user: userToken,
+      };
+      console.log("locals", req.locals);
+      res.send({ status: true, message: "Token valid" });
+    } catch (e) {
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Token error",
+      });
+    }
+  }
+  return checkTokenvalidity;
+}
 module.exports = {
   prepareTemplateSendMail,
   createUserFunc: createUserHelper,
@@ -638,4 +696,5 @@ module.exports = {
   updateUserFunc,
   findUsers,
   createAdminPanelUserHelper,
+  checkTokenValid,
 };
