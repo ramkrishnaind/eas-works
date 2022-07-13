@@ -92,7 +92,6 @@ function createUserHelper(Models) {
       ]);
 
       // setting email to lowercase
-      userData.email = String(userData.email).trim().toLowerCase();
 
       // searching email or mobile already exists or not
       let findData = await Models.UserDB.findOne({
@@ -151,6 +150,89 @@ function createUserHelper(Models) {
         status: true,
         message: "Verification mail has been sent to your registered email",
         mailSent: true,
+      });
+    } catch (e) {
+      console.log("createUserHelper err", e);
+      await errorResponseHelper({
+        res,
+        error: e,
+        defaultMessage: "Error in SignUp",
+      });
+    }
+  }
+  return createUser;
+}
+function createAdminPanelUserHelper(Models) {
+  async function createUser(req, res) {
+    try {
+      // console.log(req.sessionID)
+      // validate data using joi
+      let validateData = createUserSchema.validate(req.body);
+      if (validateData.error) {
+        throw { status: false, error: validateData, message: "Invalid data" };
+      }
+
+      // pick data from req.body
+      // let userData = _.pick(req.body, ['firstName', 'lastName', 'email', 'mobile', 'countryCode', 'userRole']);
+      let userData = _.pick(req.body, [
+        "firstName",
+        "lastName",
+        "email",
+        "company",
+        "userRole",
+        "password",
+      ]);
+
+      // setting email to lowercase
+      userData.email = String(userData.email).trim().toLowerCase();
+
+      // searching email or mobile already exists or not
+      let findData = await Models.UserDB.findOne({
+        // $or: [{ email: userData.email }, { mobile: userData.mobile }],
+        email: userData.email,
+      });
+      if (findData) {
+        // if data found check verified or not
+
+        // if not active, ie disabled by admin
+
+        throw {
+          status: false,
+          error: true,
+          message: "Account already exists",
+          duplicateAccount: true,
+          statusCode: 401,
+        };
+      }
+      userData.email = String(userData.email).trim().toLowerCase();
+      const role = await Models.UserRoleDB.findOne({ name: userData.userRole });
+      if (role) {
+        userData.userRole = role._id;
+      } else {
+        throw {
+          status: false,
+          error: true,
+          message: "Role doesn't exists",
+          statusCode: 400,
+        };
+      }
+      // creating unique token
+      let hash = await createTokenFunction(userData.email);
+      userData.verificationToken = hash;
+      let passwordText = nanoid(8);
+      userData.password = bcrypt.hashSync(userData.password, 10);
+      // if (req.files.length > 0)
+      //     userData.image = req.files;
+
+      let saveUser = await new Models.UserDB(userData).save();
+      saveUser = saveUser.toObject();
+      // saveUser.passwordText = passwordText;
+      // now send mail
+
+      res.send({
+        status: true,
+        message: "User Created Successfully",
+        data: saveUser,
       });
     } catch (e) {
       console.log("createUserHelper err", e);
@@ -312,7 +394,7 @@ function findUsers(Models) {
       // }
 
       // Getting User from Database
-      let Data = await Models.PropertyDB.find({ ...req.body })
+      let Data = await Models.PropertyDB.find({ ...req.body });
 
       console.log("Data is", Data);
       if (Data) {
@@ -544,5 +626,6 @@ module.exports = {
   addToWishList,
   removeFromWishList,
   updateUserFunc,
-  findUsers
+  findUsers,
+  createAdminPanelUserHelper,
 };

@@ -66,6 +66,13 @@ module.exports = function (conn) {
     upload.array("image"),
     userFunction.createUserFunc(db)
   );
+  //createNormalUserAdminPanelHelper
+  router.post(
+    "/createAdminPanelUser",
+    // userAuthMiddleware,
+    // upload.array("image"),
+    userFunction.createAdminPanelUserHelper(db)
+  );
   router.post(
     "/updateUser",
     userAuthMiddleware,
@@ -93,11 +100,7 @@ module.exports = function (conn) {
     userAuthMiddleware,
     userFunction.getUserProperties(db)
   );
-  router.post(
-    "/findUsers",
-    userAuthMiddleware,
-    userFunction.findUsers(db)
-  );
+  router.post("/findUsers", userAuthMiddleware, userFunction.findUsers(db));
   router.post(
     "/getUserWishList",
     userAuthMiddleware,
