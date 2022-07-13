@@ -2,6 +2,7 @@ const _ = require("lodash");
 const Joi = require("joi");
 const path = require("path");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 const createTokenFunction = require("../../../Helper/createUniqueToken");
 const prepareTemplateAndMailHelper = require("../../../Helper/prepareTemplateAndMail");
 const errorResponseHelper = require("../../../Helper/errorResponse");
