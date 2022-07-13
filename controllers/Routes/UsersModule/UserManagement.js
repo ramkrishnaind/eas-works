@@ -237,7 +237,15 @@ function createAdminPanelUserHelper(Models) {
       saveUser = saveUser.toObject();
       // saveUser.passwordText = passwordText;
       // now send mail
+      let tokenObj = {
+        email: userData.email,
+        userId: userData._id,
+        // accountno: userData.accountno,
+        token,
+        created_at: new Date(),
+      };
 
+      let saveToken = await new Models.AuthTokenDB(tokenObj).save();
       res.send({
         status: true,
         message: "User Created Successfully",
