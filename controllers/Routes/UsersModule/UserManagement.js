@@ -232,7 +232,7 @@ function createAdminPanelUserHelper(Models) {
       userData.password = bcrypt.hashSync(userData.password, 10);
       // if (req.files.length > 0)
       //     userData.image = req.files;
-
+      userData.verified = true;
       let saveUser = await new Models.UserDB(userData).save();
       saveUser = saveUser.toObject();
       // saveUser.passwordText = passwordText;
@@ -683,7 +683,7 @@ function checkTokenValid(Models) {
       await errorResponseHelper({
         res,
         error: e,
-        defaultMessage: "Token error",
+        defaultMessage: e.message || "Token error",
       });
     }
   }
