@@ -210,7 +210,6 @@ function createAdminPanelUserHelper(Models) {
           error: true,
           message: "Account already exists",
           duplicateAccount: true,
-          statusCode: 401,
         };
       }
       userData.email = String(userData.email).trim().toLowerCase();
@@ -222,7 +221,6 @@ function createAdminPanelUserHelper(Models) {
           status: false,
           error: true,
           message: "Role doesn't exists",
-          statusCode: 400,
         };
       }
       // creating unique token
@@ -248,7 +246,7 @@ function createAdminPanelUserHelper(Models) {
       await errorResponseHelper({
         res,
         error: e,
-        defaultMessage: "Error in SignUp",
+        message: "Error in SignUp",
       });
     }
   }
