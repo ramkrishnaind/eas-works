@@ -70,7 +70,7 @@ module.exports = function (conn) {
   //createNormalUserAdminPanelHelper
   router.post(
     "/createAdminPanelUser",
-    // userAuthMiddleware,
+    userAuthMiddleware,
     // upload.array("image"),
     userFunction.createAdminPanelUserHelper(db)
   );
