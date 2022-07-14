@@ -273,7 +273,9 @@ function getAllUserHelper(Models) {
   async function getAllUser(req, res) {
     try {
       // Getting all Users from Database
-      let findData = await Models.UserDB.find().sort({ _id: -1 });
+      let findData = await Models.UserDB.find()
+        .populate("userRole")
+        .sort({ _id: -1 });
       if (findData.length) {
         // if data found check verified or not
         res.send({ status: true, message: "Users List", data: findData });
